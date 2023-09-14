@@ -6,5 +6,5 @@ Parts:
 
 - Arduino Nano
 - LED Strip
-- 4ohm Speaker
+- 4 ohm Speaker
 - DY-SV8F Audio Board
