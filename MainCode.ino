@@ -40,11 +40,11 @@ void loop() {
     song.trim();
     Serial.print("Song is = ");
     Serial.println(song);
-    randomdelay = random(1000,8000);
+    randomdelay = random(5000,15000);
     delay(randomdelay);
   }
   
-  song = random(1,8);
+  song = random(1,6);
  
   //song ="1";
   
@@ -57,7 +57,7 @@ void loop() {
     digitalWrite(sound_5,HIGH);
     digitalWrite(sound_6,HIGH);
     Serial.println("Track 1");
-    delay(3000);
+    delay(5000);
   }
 
   else if(song=="2")
@@ -93,7 +93,7 @@ void loop() {
     digitalWrite(sound_5,HIGH);
     digitalWrite(sound_6,HIGH);
     Serial.println("Track 4");
-    delay(3000);
+    delay(2000);
     }
 
     else if(song=="5")
@@ -105,7 +105,7 @@ void loop() {
     digitalWrite(sound_5,LOW);
     digitalWrite(sound_6,HIGH);
     Serial.println("Track 5");
-    delay(1000);
+    delay(3000);
   }
 
     else if(song=="6")
