@@ -13,10 +13,9 @@ unsigned long soundInterval = 0; // Interval for changing sounds
 unsigned long minSoundDelay = 5 * 60 * 1000; // 5 minutes in milliseconds
 unsigned long maxSoundDelay = 10 * 60 * 1000; // 10 minutes in milliseconds
 
+unsigned long songStartTime = 0; // Track when the current song started
 bool soundPlayed = false; // Flag to track if the sound was played during the current interval
-
-unsigned long lastSoundPlayTime = 0; // Track when the last sound was played
-unsigned long soundDuration = 0; // Duration of the sound file in milliseconds
+bool silentPeriod = false; // Flag to track if it's a silent period
 
 void setup() {
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
@@ -53,44 +52,34 @@ void loop() {
   if (currentMillis - previousMillis >= soundInterval) {
     previousMillis = currentMillis;
 
-    // Calculate elapsed time since the last sound was played
-    unsigned long elapsedTime = currentMillis - lastSoundPlayTime;
-
-    // Check if the sound has been played and the elapsed time is greater than the sound duration
-    if (soundPlayed && elapsedTime >= soundDuration) {
-      soundPlayed = false; // Reset the sound played flag
-
-      // Set a new random sound interval (5 to 10 minutes)
-      soundInterval = random(minSoundDelay, maxSoundDelay);
-      Serial.print("Next sound change in seconds: ");
-      Serial.println(soundInterval / 1000);
-
-      // Turn off the sound module corresponding to the previously played song after 2 seconds
-      if (song >= 1 && song <= NUM_LEDS) {
-        delay(2000); // Wait for 2 seconds
-        digitalWrite(soundPins[song - 1], HIGH); // Turn off the sound module
-      }
-      
-      // Select a new random song (1 to 6)
-      song = random(1, 7);
-      Serial.print("Selected song: ");
-      Serial.println(song);
-      playSong(song);
-    }
-
-    // If the sound hasn't been played, set the flag and track the sound duration
     if (!soundPlayed) {
       // Select a random song (1 to 6)
       song = random(1, 7);
       Serial.print("Selected song: ");
       Serial.println(song);
       playSong(song);
+      songStartTime = currentMillis;
       soundPlayed = true;
-
-      // Simulate the sound duration (you should replace this with the actual duration)
-      soundDuration = 5000; // Set to the actual duration of the sound file in milliseconds
-      lastSoundPlayTime = currentMillis; // Record the time when the sound was played
+    } else {
+      // Turn off all sound modules
+      for (int i = 0; i < NUM_LEDS; i++) {
+        digitalWrite(soundPins[i], HIGH);
+      }
+      soundPlayed = false;
+      silentPeriod = true; // Start the silent period
     }
+
+    // Set a new random sound interval (5 to 10 minutes) during non-silent periods
+    if (!silentPeriod) {
+      soundInterval = random(minSoundDelay, maxSoundDelay);
+      Serial.print("Next sound change in seconds: ");
+      Serial.println(soundInterval / 1000);
+    }
+  }
+
+  // Check if it's time to end the silent period
+  if (silentPeriod && currentMillis - songStartTime >= minSoundDelay) {
+    silentPeriod = false;
   }
 
   // Run the LED pattern
