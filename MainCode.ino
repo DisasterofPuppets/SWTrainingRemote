@@ -10,8 +10,8 @@ int song = 0; // Store the selected song
 
 unsigned long previousMillis = 0;
 unsigned long soundInterval = 0; // Interval for changing sounds
-unsigned long minSoundDelay = 5 * 60 * 1000; // 5 minutes in milliseconds
-unsigned long maxSoundDelay = 10 * 60 * 1000; // 10 minutes in milliseconds
+unsigned long minSoundDelay = 1 * 60 * 1000; // 1 minute in milliseconds
+unsigned long maxSoundDelay = 2 * 60 * 1000; // 2 minutes in milliseconds
 
 unsigned long songStartTime = 0; // Track when the current song started
 bool soundPlayed = false; // Flag to track if the sound was played during the current interval
@@ -72,17 +72,15 @@ void loop() {
       silentPeriod = true; // Start the silent period
     }
 
-    // Set a new random sound interval (5 to 10 minutes) during non-silent periods
+    // Set a new random sound interval (1 to 2 minutes) during non-silent periods
     if (!silentPeriod) {
       soundInterval = random(minSoundDelay, maxSoundDelay);
       Serial.print("Next sound change in seconds: ");
       Serial.println(soundInterval / 1000);
+    } else {
+      // Reset silentPeriod to false during silent periods
+      silentPeriod = false;
     }
-  }
-
-  // Check if it's time to end the silent period
-  if (silentPeriod && currentMillis - songStartTime >= minSoundDelay) {
-    silentPeriod = false;
   }
 
   // Update LEDs more frequently
