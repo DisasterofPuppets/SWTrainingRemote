@@ -1,6 +1,6 @@
 # SWTrainingDrone
 Audio and Light control for Star Wars Training Drone
-Not going to lie, used ChatGPT for the LED Stuff.
+Not going to lie, used ChatGPT after getting the basics working.
 
 Parts:
 
