@@ -9,7 +9,7 @@ int soundPins[] = {4, 5, 6, 7, 8, 9};
 int song = 0; // Store the selected song
 
 unsigned long previousMillis = 0;
-unsigned long soundInterval = 0; // Interval for changing sounds
+unsigned int soundInterval = 0; // Interval for changing sounds
 unsigned long minSoundDelay = 1 * 60 * 1000; // 1 minute in milliseconds
 unsigned long maxSoundDelay = 2 * 60 * 1000; // 2 minutes in milliseconds
 
