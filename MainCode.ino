@@ -17,6 +17,9 @@ unsigned long songStartTime = 0; // Track when the current song started
 bool soundPlayed = false; // Flag to track if the sound was played during the current interval
 bool silentPeriod = false; // Flag to track if it's a silent period
 
+// Define LED update interval in milliseconds
+unsigned long ledUpdateInterval = 500; // Update LEDs every 0.5 seconds
+
 void setup() {
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(100); // Adjust this value for desired overall brightness
@@ -82,8 +85,11 @@ void loop() {
     silentPeriod = false;
   }
 
-  // Run the LED pattern
-  Dimmer();
+  // Update LEDs more frequently
+  if (currentMillis - previousMillis >= ledUpdateInterval) {
+    previousMillis = currentMillis;
+    Dimmer(); // Update LEDs
+  }
 }
 
 void playSong(int songNumber) {
@@ -166,6 +172,6 @@ void Dimmer() {
     delay(alwaysOnColorChangeDelay); // Delay before changing the color of always-on LED
     leds[alwaysOnLED] = CRGB(random(256), random(256), random(256)); // Random color
     FastLED.show();
-    alwaysOnColorChangeDelay = random(5000, 10000); // Longer random delay for color change (5 to 10 seconds)
+    alwaysOnColorChangeDelay = random(1000, 5000); // Longer random delay for color change (1 to 5 seconds)
   }
 }
