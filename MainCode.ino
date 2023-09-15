@@ -47,16 +47,14 @@ Serial.print("All off");
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (Serial.available())
-  {
+
     song = Serial.available();
     song.trim();
     Serial.print("Song is = ");
     Serial.println(song);
     randomdelay = random(5000,15000);
     delay(randomdelay);
-  }
-
+ 
 
 Dimmer();
   
