@@ -103,6 +103,8 @@ void playSong(int songNumber) {
     digitalWrite(soundPins[songNumber - 1], LOW);
     Serial.print("Playing song ");
     Serial.println(songNumber);
+    delay(3000);
+    digitalWrite(soundPins[songNumber - 1], HIGH);
   } else {
     Serial.println("Invalid song number");
   }
