@@ -4,7 +4,7 @@ int SOUND_3 = 6; //2
 int SOUND_4 = 7; //3
 int SOUND_5 = 8; //4
 int SOUND_6 = 9; //5
-
+int runonce = 0;
 int numSongs = 6;
 
 unsigned long minTimer = 300000; // minimum minutes between sounds 5 minutes
@@ -33,22 +33,26 @@ void setup()
 
 void loop()
 {
-void singitdaddy();
-}
+  if (runonce == 0)
+    {
+        playrandom();
+        runonce = 1;
+    }
+  else 
+    {
 
-void singitdaddy();
-int songNumber = random(1,6);
-Serial.println(songNumber);
-playrandom(songNumber);
-Serial.print("Delaying ");
-unsigned long silence = random(minTimer,maxTimer);
-Serial.println(silence);
-delay(random(silence));
+    Serial.print("Delaying ");
+    unsigned long silence = random(minTimer,maxTimer);
+    Serial.println(silence);
+    delay(random(silence));
+    playrandom();
+    }
 }
+void playrandom() {
 
-void playrandom(int songNumber) 
-{
-  
+  int songNumber = random(1,6);
+  Serial.println(songNumber);
+
   if (songNumber == 1){
   digitalWrite(SOUND_1, LOW); 
   Serial.println("Playing Sound 1"); 
@@ -89,5 +93,5 @@ void playrandom(int songNumber)
   Serial.println("Playing Sound 6"); 
   delay(3990);
   digitalWrite(SOUND_6, HIGH); 
-}
+  }
 }
