@@ -1,177 +1,93 @@
-#include <FastLED.h>
+int SOUND_1 = 4; //0
+int SOUND_2 = 5; //1
+int SOUND_3 = 6; //2
+int SOUND_4 = 7; //3
+int SOUND_5 = 8; //4
+int SOUND_6 = 9; //5
 
-#define NUM_LEDS 6
-#define DATA_PIN 10
+int numSongs = 6;
 
-CRGB leds[NUM_LEDS];
+unsigned long minTimer = 300000; // minimum minutes between sounds 5 minutes
+unsigned long maxTimer = 600000; // maximum minutes between sounds 10 minutes
 
-int soundPins[] = {4, 5, 6, 7, 8, 9};
-int song = 0; // Store the selected song
-
-unsigned long previousMillis = 0;
-unsigned int soundInterval = 0; // Interval for changing sounds
-unsigned long minSoundDelay = 1 * 60 * 1000; // 1 minute in milliseconds
-unsigned long maxSoundDelay = 2 * 60 * 1000; // 2 minutes in milliseconds
-
-unsigned long songStartTime = 0; // Track when the current song started
-bool soundPlayed = false; // Flag to track if the sound was played during the current interval
-bool silentPeriod = false; // Flag to track if it's a silent period
-
-// Define LED update interval in milliseconds
-unsigned long ledUpdateInterval = 500; // Update LEDs every 0.5 seconds
-
-void setup() {
-  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setBrightness(100); // Adjust this value for desired overall brightness
-  randomSeed(analogRead(0)); // Seed the random number generator
-
-  // Initialize sound pins
-  for (int i = 0; i < NUM_LEDS; i++) {
-    pinMode(soundPins[i], OUTPUT);
-    digitalWrite(soundPins[i], HIGH); // Turn off all sound modules initially
-  }
-
-  Serial.begin(9600);
-  Serial.println("All off");
+void setup() 
+{
+  
+  pinMode (SOUND_1, OUTPUT);
+  pinMode (SOUND_2, OUTPUT);
+  pinMode (SOUND_3, OUTPUT);
+  pinMode (SOUND_4, OUTPUT);
+  pinMode (SOUND_5, OUTPUT);
+  pinMode (SOUND_6, OUTPUT);
+  
+  digitalWrite(SOUND_1, HIGH); 
+  digitalWrite(SOUND_2, HIGH); 
+  digitalWrite(SOUND_3, HIGH); 
+  digitalWrite(SOUND_4, HIGH); 
+  digitalWrite(SOUND_5, HIGH); 
+  digitalWrite(SOUND_6, HIGH); 
+  
+  Serial.begin(9600); // open the serial port at 9600 bps
 }
 
-// Function to shuffle an array randomly
-void shuffleArray(int arr[], int size) {
-  for (int i = size - 1; i > 0; i--) {
-    int j = random(0, i + 1);
-    if (i != j) {
-      // Swap elements at positions i and j
-      int temp = arr[i];
-      arr[i] = arr[j];
-      arr[j] = temp;
-    }
-  }
+
+void loop()
+{
+void singitdaddy();
 }
 
-void loop() {
-  unsigned long currentMillis = millis();
-
-  // Check if it's time to change sounds
-  if (currentMillis - previousMillis >= soundInterval) {
-    previousMillis = currentMillis;
-
-    if (!soundPlayed) {
-      // Select a random song (1 to 6)
-      song = random(1, 7);
-      Serial.print("Selected song: ");
-      Serial.println(song);
-      playSong(song);
-      songStartTime = currentMillis;
-      soundPlayed = true;
-    } else {
-      // Turn off all sound modules
-      for (int i = 0; i < NUM_LEDS; i++) {
-        digitalWrite(soundPins[i], HIGH);
-      }
-      soundPlayed = false;
-      silentPeriod = true; // Start the silent period
-    }
-
-    // Set a new random sound interval (1 to 2 minutes) during non-silent periods
-    if (!silentPeriod) {
-      soundInterval = random(minSoundDelay, maxSoundDelay);
-      Serial.print("Next sound change in seconds: ");
-      Serial.println(soundInterval / 1000);
-    } else {
-      // Reset silentPeriod to false during silent periods
-      silentPeriod = false;
-    }
-  }
-
-  // Update LEDs more frequently
-  if (currentMillis - previousMillis >= ledUpdateInterval) {
-    previousMillis = currentMillis;
-    Dimmer(); // Update LEDs
-  }
+void singitdaddy();
+int songNumber = random(1,6);
+Serial.println(songNumber);
+playrandom(songNumber);
+Serial.print("Delaying ");
+unsigned long silence = random(minTimer,maxTimer);
+Serial.println(silence);
+delay(random(silence));
 }
 
-void playSong(int songNumber) {
-  // Turn off all sound modules initially
-  for (int i = 0; i < NUM_LEDS; i++) {
-    digitalWrite(soundPins[i], HIGH);
-  }
-
-  // Turn on the sound module corresponding to the selected song
-  if (songNumber >= 1 && songNumber <= NUM_LEDS) {
-    digitalWrite(soundPins[songNumber - 1], LOW);
-    Serial.print("Playing song ");
-    Serial.println(songNumber);
-    delay(3000);
-    digitalWrite(soundPins[songNumber - 1], HIGH);
-  } else {
-    Serial.println("Invalid song number");
-  }
-
-  // Add any additional logic for sound playback here
+void playrandom(int songNumber) 
+{
+  
+  if (songNumber == 1){
+  digitalWrite(SOUND_1, LOW); 
+  Serial.println("Playing Sound 1"); 
+  delay(1050);
+  digitalWrite(SOUND_1, HIGH); 
 }
 
-void Dimmer() {
-  // Set one LED to be always on
-  int alwaysOnLED = random(NUM_LEDS);
-  bool alwaysOnBlink = false; // Flag to control blinking of always-on LED
-  int alwaysOnColorChangeDelay = random(5000, 10000); // Longer random delay for color change (5 to 10 seconds)
+  if (songNumber == 2){
+  digitalWrite(SOUND_2, LOW); 
+  Serial.println("Playing Sound 2"); 
+  delay(2642);
+  digitalWrite(SOUND_2, HIGH); 
+}
 
-  // Randomly determine whether to blink slowly or quickly
-  bool slowBlink = random(2) == 0;
+  if (songNumber == 3){
+  digitalWrite(SOUND_3, LOW); 
+  Serial.println("Playing Sound 3"); 
+  delay(4060);
+  digitalWrite(SOUND_3, HIGH); 
+}
 
-  // Randomly choose the number of LEDs to flicker quickly
-  int numLEDsToFlickerQuickly = random(1, 2); // 1 or 2
+  if (songNumber == 4){
+  digitalWrite(SOUND_4, LOW); 
+  Serial.println("Playing Sound 4"); 
+  delay(1315);
+  digitalWrite(SOUND_4, HIGH); 
+}
 
-  // Ensure at least 2 more LEDs are turned on and they are unique
-  int numLEDsToKeepOn = max(2, random(NUM_LEDS - numLEDsToFlickerQuickly));
-  int indices[NUM_LEDS - 1]; // Array to store LED indices except the always-on LED
+  if (songNumber == 5){
+  digitalWrite(SOUND_5, LOW); 
+  Serial.println("Playing Sound 5"); 
+  delay(2362);
+  digitalWrite(SOUND_5, HIGH); 
+}
 
-  // Fill the array with indices 0 to NUM_LEDS-1, excluding alwaysOnLED
-  int j = 0;
-  for (int i = 0; i < NUM_LEDS; i++) {
-    if (i != alwaysOnLED) {
-      indices[j] = i;
-      j++;
-    }
-  }
-
-  shuffleArray(indices, NUM_LEDS - 1); // Shuffle the indices randomly
-
-  // Turn on at least 2 unique LEDs with random colors
-  for (int i = 0; i < numLEDsToKeepOn; i++) {
-    int index = indices[i];
-    leds[index] = CRGB(random(256), random(256), random(256)); // Random color
-  }
-
-  // Flicker selected LEDs with changing colors
-  for (int i = 0; i < numLEDsToFlickerQuickly; i++) {
-    int index = random(NUM_LEDS - 1); // Random index except the always on LED
-    for (int j = 0; j < 10; j++) { // Change colors slowly for 10 iterations
-      leds[indices[index]] = CRGB(random(256), random(256), random(256)); // Change color
-      FastLED.show();
-      delay(500); // Delay to control the color change speed (500ms)
-    }
-    leds[indices[index]] = CRGB::Black; // Turn off the LED
-  }
-
-  // Blink or fade the always-on LED
-  if (alwaysOnBlink) {
-    if (slowBlink) {
-      delay(random(8000, 20000)); // Longer random delay for slow blinking (8 to 20 seconds)
-    } else {
-      delay(random(500, 2000)); // Longer random delay for quick blinking (0.5 to 2 seconds)
-    }
-    alwaysOnBlink = !alwaysOnBlink;
-  } else {
-    // Dim the always-on LED to 0 at a slower speed
-    for (int b = 255; b >= 0; b--) {
-      leds[alwaysOnLED].fadeToBlackBy(random(2, 8)); // Random dim speed (2 to 8)
-      FastLED.show();
-      delay(50); // Delay to control the slower dimming speed (50ms)
-    }
-    delay(alwaysOnColorChangeDelay); // Delay before changing the color of always-on LED
-    leds[alwaysOnLED] = CRGB(random(256), random(256), random(256)); // Random color
-    FastLED.show();
-    alwaysOnColorChangeDelay = random(1000, 5000); // Longer random delay for color change (1 to 5 seconds)
-  }
+  if (songNumber == 6){
+  digitalWrite(SOUND_6, LOW); 
+  Serial.println("Playing Sound 6"); 
+  delay(3990);
+  digitalWrite(SOUND_6, HIGH); 
+}
 }
