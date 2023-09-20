@@ -5,7 +5,7 @@
  * Sound 1 - Lasers
  * Sound 2 - Air Jet movement
  * Sound 3 - Warning Siren 
- * Sound 4 - Overload
+ * Sound 4 - Sparks
  * Sound 5 - Electricity
  * Sound 6 - Robot
  ************************/
@@ -81,7 +81,7 @@ if (currentMillis - lastSoundTime >= randomDelay) {
             warning();
             }
             else if (randoTrack == 3){
-              Serial.println("Overload");
+              Serial.println("Sparks");
               sparks();
               }
               else if (randoTrack == 4){
@@ -105,83 +105,6 @@ if (currentMillis - lastSoundTime >= randomDelay) {
 
      
 }
-
-////////////////////////////////////////ELECTRICITY/////////////////////////////
-
-void electricity() {
-  
-  // This is just Confetti from the Examples file 
-  // with different colors and added array in the pre setup
-  // Random colored speckles that blink in and fade smoothly
-
-  digitalWrite(soundPins[4],LOW); // Sound 5
-  blackEvens(); // Turn even LEDs black/off
-  FastLED.show();
-  delay(29); // Silence in audio file at the start
-  fadeToBlackBy(leds, NUM_LEDS, 10);
-
-  for (int i = 0; i < NUM_LEDS; i++) {
-    if (i == 0 || i == 2 || i == 4 || i == 6) {
-      int pos = i; // Set the position to the even index
-      leds[pos] = colors[random8(3)];
-      FastLED.show();
-      delay(20);// set blink speed
-    }
-  }
-
-  blackEvens(); // Turn even LEDs black/off
-  FastLED.show();
-  digitalWrite(soundPins[4],HIGH); // Sound 5 off
-  lastSoundTime = millis();
-}
-
-
-////////////////////////////////////////SPARKS/////////////////////////////
-
-void sparks() { 
-  
-  CRGB targetColor = CRGB::RoyalBlue;
-
-digitalWrite(soundPins[3],LOW); // Sound 4 on
-blackEvens(); // Turn even LEDs black/off
-FastLED.show();
-delay(115);
-
-
-  for (int brightness = 0; brightness <= 255; brightness++) {
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){    
-      leds[i] = targetColor;
-      leds[i].fadeToBlackBy(255 - brightness); //fade out
-      FastLED.show();
-      delay(1157 / 255);
-      
-      }
-     }       
-    }
-  
-
- blackEvens(); // Turn even LEDs black/off
-  FastLED.show();
-  delay(77);
-  
-
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){    
-      leds[i] = targetColor;
-      FastLED.show(); 
-      }
-     }
-delay(181);
-
- blackEvens(); // Turn even LEDs black/off
-  FastLED.show();
-  digitalWrite(soundPins[3],HIGH); // Sound 4 off
-  lastSoundTime = millis();
-  
-}
-
-
 
 ////////////////////////////////////////LASERS/////////////////////////////
 
@@ -333,7 +256,7 @@ FastLED.show();
 
 
 }
- 
+
 ////////////////////////////////////////WARNING/////////////////////////////
 
 void warning() { //Sound 3
@@ -395,15 +318,79 @@ FastLED.show();
 
 }
 
-//////////////////////////////////BLACK EVENS/////////////////
+////////////////////////////////////////SPARKS/////////////////////////////
 
-void blackEvens(){
-      for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      FastLED.show(); 
-       }
+void sparks() { 
+  
+  CRGB targetColor = CRGB::RoyalBlue;
+
+digitalWrite(soundPins[3],LOW); // Sound 4 on
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
+delay(115);
+
+
+  for (int brightness = 0; brightness <= 255; brightness++) {
+    for (int i=0;i <=NUM_LEDS -1; i++){
+      if (i == 0 | i == 2| i == 4 | i == 6){    
+      leds[i] = targetColor;
+      leds[i].fadeToBlackBy(255 - brightness); //fade out
+      FastLED.show();
+      delay(1157 / 255);
+      
+      }
+     }       
     }
+  
+
+ blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  delay(77);
+  
+
+    for (int i=0;i <=NUM_LEDS -1; i++){
+      if (i == 0 | i == 2| i == 4 | i == 6){    
+      leds[i] = targetColor;
+      FastLED.show(); 
+      }
+     }
+delay(181);
+
+ blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  digitalWrite(soundPins[3],HIGH); // Sound 4 off
+  lastSoundTime = millis();
+  
+}
+
+
+////////////////////////////////////////ELECTRICITY/////////////////////////////
+
+void electricity() {
+  
+  // This is just Confetti from the Examples file 
+  // with different colors and added array in the pre setup
+  // Random colored speckles that blink in and fade smoothly
+
+  digitalWrite(soundPins[4],LOW); // Sound 5
+  blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  delay(29); // Silence in audio file at the start
+  fadeToBlackBy(leds, NUM_LEDS, 10);
+
+  for (int i = 0; i < NUM_LEDS; i++) {
+    if (i == 0 || i == 2 || i == 4 || i == 6) {
+      int pos = i; // Set the position to the even index
+      leds[pos] = colors[random8(3)];
+      FastLED.show();
+      delay(20);// set blink speed
+    }
+  }
+
+  blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  digitalWrite(soundPins[4],HIGH); // Sound 5 off
+  lastSoundTime = millis();
 }
 
 ////////////////////////////////////////ROBOT/////////////////////////////
@@ -420,3 +407,16 @@ void robot(){
   delay(10);
   
 }
+
+
+//////////////////////////////////BLACK EVENS/////////////////
+
+void blackEvens(){
+      for (int i = 0; i <= NUM_LEDS -1; i++){
+      if (i == 0 | i == 2| i == 4 | i == 6){
+      leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+    }
+}
+
