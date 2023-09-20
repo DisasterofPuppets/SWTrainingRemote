@@ -1,6 +1,5 @@
-//This will be rolled into the main code, just keeping seperate for sound syncing and progress
-
 #include <FastLED.h>
+
 #define COLOR_ORDER GRB
 #define CHIPSET     WS2812
 #define BRIGHTNESS  255
@@ -33,6 +32,8 @@ Serial.begin(9600);
 
 void loop() {
 
+  unsigned long currentTime = millis();
+
 colorPicker1 = random(3);
 colorPicker2 = random(3);
 colorPicker3 = random(3);
@@ -43,14 +44,44 @@ Serial.println(colorPicker2);
 Serial.println(colorPicker3);
 Serial.println(colorPicker4);
 electricity();
-delay(5000);
+delay(10);
 
 }
 
-
-
-
 void electricity() {
+  // Create a list of random colors
+  CRGB colors[3] = {CRGB::White, CRGB::Blue, CRGB::Yellow};
+
+  // Create a list of the LED indices to affect
+  int led_indices[4] = {0, 2, 4, 6};
+
+  // Create a list of random fade times
+  int fade_times[4];
+  for (int i = 0; i < 4; i++) {
+    fade_times[i] = random(500, 1000);
+  }
+
+  // Set the color and fade time for each LED
+  for (int i = 0; i < 4; i++) {
+    int led_index = led_indices[i];
+
+    CRGB color = colors[random(3)];
+    int fade_time = fade_times[i];
+
+    leds[led_index] = color;
+
+    // Fade out the LED over the specified fade time
+    for (int brightness = 255; brightness >= 0; brightness--) {
+      leds[led_index].setRGB(brightness, brightness, brightness);
+      FastLED.show();
+      delay(fade_time / 255);
+    }
+  }
+
+  // Update the LED strip
+  FastLED.show();
+}
+
 
 
 
@@ -78,63 +109,6 @@ void electricity() {
 
 ////////////////////////////////////////////////////*/        
 
-
-/////////////////////////////////Random Fade in or out/////////////////////
-  
-           for (int brightness = 0; brightness <= 255; brightness++){ // total steps to go through
-                     
-              if (colorPicker1 == 0){
-                  leds[0] = CRGB::White;
-              }
-              else if (colorPicker1 == 1){
-                leds[0] = CRGB::Yellow;
-              }
-              else if (colorPicker1 == 2){
-                leds[0] = CRGB::Blue;
-              }
-
-              if (colorPicker2 == 0){
-                  leds[2] = CRGB::White;
-              }
-              else if (colorPicker2 == 1){
-                leds[2] = CRGB::Yellow;
-              }
-              else if (colorPicker2 == 2){
-                leds[2] = CRGB::Blue;
-              }
-               
-              if (colorPicker3 == 0){
-                  leds[4] = CRGB::White;
-              }
-              else if (colorPicker3 == 1){
-                leds[4] = CRGB::Yellow;
-              }
-              else if (colorPicker3 == 2){
-                leds[4] = CRGB::Blue;
-              }
-              
-              if (colorPicker4 == 0){
-                  leds[6] = CRGB::White;
-              }
-              else if (colorPicker4 == 1){
-                leds[6] = CRGB::Yellow;
-              }
-              else if (colorPicker4 == 2){
-                leds[6] = CRGB::Blue;
-              }
-
-    for (int i = 0; i < numLEDS; i++) {     
-       if (i == 0 || i == 2 || i == 4 || i == 6) {         
-        leds[i].fadeToBlackBy(255 - brightness);
-        FastLED.show();
-        delay(random(500,1000));
-
-      }
-    }
-  }
-  FastLED.show();
-  delay(10); // Adjust the delay as needed for the desired fading speed
-}
 ////////////////////////////////////////////////////////////////////////////
 
 
