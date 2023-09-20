@@ -44,8 +44,22 @@ Serial.println(colorPicker1);
 Serial.println(colorPicker2);
 Serial.println(colorPicker3);
 Serial.println(colorPicker4);
+
+Serial.println("Electricity");
+electricity();
+delay(100);
+//Serial.println("redFade");
+//redFade();
+//delay(5000);    //currently stuck in loop here?
+Serial.println("Sparks");
 sparks();
-delay(10);
+delay(100);
+Serial.println("AirJets");
+airJets();
+delay(100);
+Serial.println("Lasers");
+lasers();
+delay(100);
 
 }
 
@@ -53,6 +67,8 @@ void electricity() {
   // This is just Confetti from the Examples file 
   // with different colors and added array in the pre setup
   // Random colored speckles that blink in and fade smoothly
+  
+  blackEvens(); // Turn even LEDs black/off
   FastLED.show();
   delay(29); // Silence in audio file at the start
   fadeToBlackBy(leds, NUM_LEDS, 10);
@@ -76,14 +92,10 @@ void sparks() {
   
   CRGB targetColor = CRGB::RoyalBlue;
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      FastLED.show(); 
-      }
-    }
-
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
 delay(115);
+
 
   for (int brightness = 0; brightness <= 255; brightness++) {
     for (int i=0;i <=NUM_LEDS -1; i++){
@@ -98,14 +110,10 @@ delay(115);
     }
   
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      FastLED.show(); 
-       }
-    }
-
-delay(077);
+ blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  delay(77);
+  
 
     for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){    
@@ -115,13 +123,9 @@ delay(077);
      }
 delay(181);
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      FastLED.show(); 
-      }
-    }
-delay(100);
+ blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  delay(10);
 }
 
 
@@ -144,13 +148,8 @@ void lasers() { //Sound 1
 FastLED.show(); 
 delay(400);
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-    
-FastLED.show(); 
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
 delay(809);
 
   for (int brightness = 0; brightness <= 255; brightness++){
@@ -164,13 +163,8 @@ delay(809);
 FastLED.show(); 
 delay(485);
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-    
-FastLED.show(); 
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
 delay(304);
     
 
@@ -184,13 +178,9 @@ delay(304);
 FastLED.show(); 
 delay(370);    
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-FastLED.show(); 
-delay(100);
+ blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  delay(100);
 
 for (int brightness = 0; brightness <= 255; brightness++){
     for (int i=0;i <=NUM_LEDS -1; i++){
@@ -203,13 +193,9 @@ for (int brightness = 0; brightness <= 255; brightness++){
 FastLED.show(); 
 delay(449);
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-FastLED.show(); 
-delay(10);
+ blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  delay(10);
 
 }
 
@@ -219,14 +205,9 @@ void airJets() { //Sound 2
   
   CRGB targetColor = CRGB::Cyan;
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-    
-FastLED.show(); 
-delay(200);
+ blackEvens(); // Turn even LEDs black/off
+  FastLED.show();
+  delay(200);
 
 
 // fade from off to full color brightness
@@ -241,13 +222,8 @@ delay(200);
 FastLED.show(); 
 delay(283);
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-    
-FastLED.show(); 
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
 delay(100);
 
   for (int brightness = 0; brightness <= 255; brightness++){
@@ -261,12 +237,8 @@ delay(100);
 FastLED.show(); 
 delay(316);
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-FastLED.show(); 
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
 delay(100);
     
 
@@ -280,12 +252,8 @@ delay(100);
 FastLED.show(); 
 delay(503);    
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-FastLED.show(); 
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
 delay(100);
     
 
@@ -299,13 +267,10 @@ delay(100);
 FastLED.show(); 
 delay(690);    
 
-    for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6){
-      leds[i] = CRGB::Black;
-      }
-    }
-FastLED.show(); 
+blackEvens(); // Turn even LEDs black/off
+FastLED.show();
 delay(100);
+
 }
  
 
@@ -359,6 +324,7 @@ void redFade() { //Sound 3
  
   }
   }
+  return;
 }
 
 void blackEvens(){
