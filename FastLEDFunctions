@@ -5,7 +5,7 @@
 #define BRIGHTNESS  255
 #define FRAMES_PER_SECOND 60
 
-const int numLEDS = 8;
+const int NUM_LEDS = 8;
 const int ledPin = 10;
 bool gReverseDirection = false;
 
@@ -14,16 +14,17 @@ int colorPicker2;
 int colorPicker3;
 int colorPicker4;
 
-CRGB leds[numLEDS];
+CRGB leds[NUM_LEDS];
+CRGB colors[] = {CRGB::White, CRGB::Yellow, CRGB::Blue};
 
-unsigned long animationStartMillis[numLEDS];
-unsigned long animationDuration[numLEDS];
+unsigned long animationStartMillis[NUM_LEDS];
+unsigned long animationDuration[NUM_LEDS];
 unsigned long maxBrightnessDuration = 100; // Maximum brightness duration in milliseconds
 
 void setup() 
 {
 
-FastLED.addLeds<CHIPSET, ledPin, COLOR_ORDER>(leds, numLEDS).setCorrection( TypicalLEDStrip );
+FastLED.addLeds<CHIPSET, ledPin, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
 randomSeed(analogRead(0)); // Initialize random seed
 FastLED.show(); // Initialize LED with all LEDs off
 Serial.begin(9600);
@@ -43,84 +44,39 @@ Serial.println(colorPicker1);
 Serial.println(colorPicker2);
 Serial.println(colorPicker3);
 Serial.println(colorPicker4);
-electricity();
+sparks();
 delay(10);
 
 }
 
 void electricity() {
-  // Create a list of random colors
-  CRGB colors[3] = {CRGB::White, CRGB::Blue, CRGB::Yellow};
+  // This is just Confetti from the Examples file 
+  // with different colors and added array in the pre setup
+  // Random colored speckles that blink in and fade smoothly
+  FastLED.show();
+  delay(29); // Silence in audio file at the start
+  fadeToBlackBy(leds, NUM_LEDS, 10);
 
-  // Create a list of the LED indices to affect
-  int led_indices[4] = {0, 2, 4, 6};
-
-  // Create a list of random fade times
-  int fade_times[4];
-  for (int i = 0; i < 4; i++) {
-    fade_times[i] = random(500, 1000);
-  }
-
-  // Set the color and fade time for each LED
-  for (int i = 0; i < 4; i++) {
-    int led_index = led_indices[i];
-
-    CRGB color = colors[random(3)];
-    int fade_time = fade_times[i];
-
-    leds[led_index] = color;
-
-    // Fade out the LED over the specified fade time
-    for (int brightness = 255; brightness >= 0; brightness--) {
-      leds[led_index].setRGB(brightness, brightness, brightness);
+  for (int i = 0; i < NUM_LEDS; i++) {
+    if (i == 0 || i == 2 || i == 4 || i == 6) {
+      int pos = i; // Set the position to the even index
+      leds[pos] = colors[random8(3)];
       FastLED.show();
-      delay(fade_time / 255);
+      delay(20);// set blink speed
     }
   }
 
-  // Update the LED strip
+  blackEvens(); // Turn even LEDs black/off
   FastLED.show();
+  delay(10);
 }
-
-
-
-
-/*///////////////////////SOLID WHITE 100ms BLINK
-
-//off
-//029
-//on
-//2370
-//off 100
-
-
-
-            //solid white max brightness 50ms
-            for (int i = 0; i <= numLEDS -1; i++){
-                if (i == 0 | i == 2| i == 4 | i == 6){
-                leds[i] = CRGB::White; // LED on
-                FastLED.show();
-                }
-            }
-            delay(50);
-            FastLED.clear();
-            FastLED.show();
-            delay(1000);
-
-////////////////////////////////////////////////////*/        
-
-////////////////////////////////////////////////////////////////////////////
-
-
-
-
 
 
 void sparks() {
   
   CRGB targetColor = CRGB::RoyalBlue;
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       FastLED.show(); 
@@ -130,7 +86,7 @@ void sparks() {
 delay(115);
 
   for (int brightness = 0; brightness <= 255; brightness++) {
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){    
       leds[i] = targetColor;
       leds[i].fadeToBlackBy(255 - brightness); //fade out
@@ -142,7 +98,7 @@ delay(115);
     }
   
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       FastLED.show(); 
@@ -151,7 +107,7 @@ delay(115);
 
 delay(077);
 
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){    
       leds[i] = targetColor;
       FastLED.show(); 
@@ -159,7 +115,7 @@ delay(077);
      }
 delay(181);
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       FastLED.show(); 
@@ -178,7 +134,7 @@ void lasers() { //Sound 1
 
 // fade from off to full color brightness
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -188,7 +144,7 @@ void lasers() { //Sound 1
 FastLED.show(); 
 delay(400);
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -198,7 +154,7 @@ FastLED.show();
 delay(809);
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -208,7 +164,7 @@ delay(809);
 FastLED.show(); 
 delay(485);
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -219,7 +175,7 @@ delay(304);
     
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -228,7 +184,7 @@ delay(304);
 FastLED.show(); 
 delay(370);    
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -237,7 +193,7 @@ FastLED.show();
 delay(100);
 
 for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -247,7 +203,7 @@ for (int brightness = 0; brightness <= 255; brightness++){
 FastLED.show(); 
 delay(449);
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -263,7 +219,7 @@ void airJets() { //Sound 2
   
   CRGB targetColor = CRGB::Cyan;
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -275,7 +231,7 @@ delay(200);
 
 // fade from off to full color brightness
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -285,7 +241,7 @@ delay(200);
 FastLED.show(); 
 delay(283);
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -295,7 +251,7 @@ FastLED.show();
 delay(100);
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -305,7 +261,7 @@ delay(100);
 FastLED.show(); 
 delay(316);
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -315,7 +271,7 @@ delay(100);
     
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -324,7 +280,7 @@ delay(100);
 FastLED.show(); 
 delay(503);    
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -334,7 +290,7 @@ delay(100);
     
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=numLEDS -1; i++){
+    for (int i=0;i <=NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
     leds[i] = targetColor;
     }
@@ -343,7 +299,7 @@ delay(100);
 FastLED.show(); 
 delay(690);    
 
-    for (int i = 0; i <= numLEDS -1; i++){
+    for (int i = 0; i <= NUM_LEDS -1; i++){
       if (i == 0 | i == 2| i == 4 | i == 6){
       leds[i] = CRGB::Black;
       }
@@ -365,7 +321,7 @@ void redFade() { //Sound 3
 
   for (int brightness = 0; brightness <= 255; brightness++) {
     // Set the LED brightness for odd-numbered LEDs
-    for (int i = 0; i <= numLEDS -1; i += 2) {
+    for (int i = 0; i <= NUM_LEDS -1; i += 2) {
       leds[i] = CRGB(brightness, 0, 0); // Red with specified brightness
     }
 
@@ -375,7 +331,7 @@ void redFade() { //Sound 3
 
   for (int brightness = 255; brightness >= 0; brightness--) {
     // Set the LED brightness for odd-numbered LEDs
-    for (int i = 0; i <= numLEDS -1; i += 2) {
+    for (int i = 0; i <= NUM_LEDS -1; i += 2) {
       leds[i] = CRGB(brightness, 0, 0); // Red with specified brightness
     }
 
@@ -384,7 +340,7 @@ void redFade() { //Sound 3
 
       for (int brightness = 0; brightness <= 255; brightness++) {
     // Set the LED brightness for odd-numbered LEDs
-    for (int i = 0; i <= numLEDS -1; i += 2) {
+    for (int i = 0; i <= NUM_LEDS -1; i += 2) {
       leds[i] = CRGB(brightness, 0, 0); // Red with specified brightness
     }
 
@@ -394,7 +350,7 @@ void redFade() { //Sound 3
 
   for (int brightness = 255; brightness >= 0; brightness--) {
     // Set the LED brightness for odd-numbered LEDs
-    for (int i = 0; i <= numLEDS -1; i += 2) {
+    for (int i = 0; i <= NUM_LEDS -1; i += 2) {
       leds[i] = CRGB(brightness, 0, 0); // Red with specified brightness
     }
 
@@ -404,3 +360,13 @@ void redFade() { //Sound 3
   }
   }
 }
+
+void blackEvens(){
+      for (int i = 0; i <= NUM_LEDS -1; i++){
+      if (i == 0 | i == 2| i == 4 | i == 6){
+      leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+    }
+}
+
