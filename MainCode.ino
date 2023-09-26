@@ -59,8 +59,8 @@ unsigned long currentMillis = millis();
   
 if (currentMillis - lastSoundTime >= randomDelay) {
 // choose random sound
-     // randoTrack = random(0,numSounds); 
-     randoTrack = 2;
+     randoTrack = random(0,numSounds); 
+     
       
 
       if (randoTrack == 0){
