@@ -19,6 +19,8 @@ const int numSounds = 6;
 const int NUM_LEDS = 9;
 const int ledPin = 10;
 bool gReverseDirection = false;
+const int largeLEDS = 5;
+const int smallLEDS =4;
 
 
 CRGB leds[NUM_LEDS];
@@ -50,17 +52,21 @@ Serial.begin(9600);
 
 void loop() {
 
+blackALL();
+delay(500);
+
 Serial.print("Random Delay ");
 Serial.println(randomDelay);
 Serial.print("Time since last sound ");
 Serial.println(lastSoundTime);
 
 unsigned long currentMillis = millis();
-  
+
+//if (currentMillis - lastSoundTime >= 1111111111111111111111111111) { // testing waiting period animation on smaller leds
 if (currentMillis - lastSoundTime >= randomDelay) {
 // choose random sound
 randoTrack = random(0,numSounds); 
-//randoTrack = 3; // For testing
+//randoTrack = 5; // For testing
      
 
       
@@ -83,7 +89,6 @@ randoTrack = random(0,numSounds);
             else if (randoTrack == 3){
               Serial.println("Sparks");
               sparks();
-              randomSparks(3);
               randomDelay = random(minDelay,maxDelay);
             }
               else if (randoTrack == 4){
@@ -93,7 +98,7 @@ randoTrack = random(0,numSounds);
               }
                 else if(randoTrack == 5){
                   Serial.println("Robot");
-                  lasers();
+                  robot();
                   randomDelay = random(minDelay,maxDelay);
                 }
 }
@@ -103,11 +108,17 @@ randoTrack = random(0,numSounds);
       Serial.println(" milliseconds");
       delay(1000);// stop the serial spam
       Serial.print("Current count ");
-      Serial.println(currentMillis);   
+      Serial.println(currentMillis);  
+      int Rando = random(smallLEDS + 1,NUM_LEDS);
+      Serial.print("Rando is ");
+      Serial.println(Rando); 
+      //testLEDS(); uncomment this and comment out below to confirm you have all leds wired and working
+       randomSmall(Rando);
     }
 }
-////////////////////////////////////////LASERS/////////////////////////////
 
+
+////////////////////////////////////////LASERS/////////////////////////////
 void lasers(){
 
 
@@ -117,197 +128,117 @@ void lasers(){
 delay(300);
 
 //Move LED along strip First shot
-    for (int i = 0; i < NUM_LEDS; i++) {
+    for (int i = 0; i < largeLEDS; i++) {
       leds[i] = CRGB::Red;
       FastLED.show();
       delay(20);
       leds[i] = CRGB::Black;
       delay(20);
+      FastLED.show();
     }
     //delay between shots
     delay(800);
 
 //2nd shot
-    for (int i = 0; i < NUM_LEDS; i++) {
+    for (int i = 0; i < largeLEDS; i++) {
       leds[i] = CRGB::Red;
       FastLED.show();
       delay(20);
       leds[i] = CRGB::Black;
       delay(20);
+      FastLED.show();
     }
     //delay between shots
     delay(800);
 //3rd
-    for (int i = 0; i < NUM_LEDS; i++) {
+    for (int i = 0; i < largeLEDS; i++) {
       leds[i] = CRGB::Red;
       FastLED.show();
       delay(20);
       leds[i] = CRGB::Black;
       delay(20);
+      FastLED.show();
     }
     //delay between shots
     delay(50);
 //4th
-    for (int i = 0; i < NUM_LEDS; i++) {
+    for (int i = 0; i < largeLEDS; i++) {
       leds[i] = CRGB::Red;
       FastLED.show();
       delay(20);
       leds[i] = CRGB::Black;
       delay(20);
+      FastLED.show();
     }
 
-  blackEvens(); // Turn even LEDs black/off
-  digitalWrite(soundPins[0],HIGH); //stop the sound
-  lastSoundTime = millis();  
-  return;
-}
-
-
-
-
-
-////////////////////////
-void lasersold() { 
-
-
-  CRGB targetColor = CRGB::DarkOrange;
- //trigger audio file 1
-  digitalWrite(soundPins[0],LOW); // Play sound 1(0)
-  delay(300); // delay to allow for silence at start of sound file
-// fade from off to full color brightness
-  for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6 | i == 8){
-    leds[i] = targetColor;
-    }
-      }
-  }
-   
-  FastLED.show(); 
-  delay(400);
-
-  blackEvens(); // Turn even LEDs black/off
-  delay(809);
-
-  for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6 | i == 8){
-    leds[i] = targetColor;
-    }
-      }
-  }
-    
-  FastLED.show(); 
-  delay(485);
-
-  blackEvens(); // Turn even LEDs black/off
-  delay(304);
-    
-
-  for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
-    leds[i] = targetColor;
-    }
-      }
-  }
-  FastLED.show(); 
-  delay(370);    
-
-  blackEvens(); // Turn even LEDs black/off
-  delay(100);
-
-  for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
-    leds[i] = targetColor;
-    }
-      }
-  }
-
-  FastLED.show(); 
-  delay(449);
-
-  blackEvens(); // Turn even LEDs black/off
   digitalWrite(soundPins[0],HIGH); //stop the sound
   lastSoundTime = millis();  
   return;
 }
 
 ////////////////////////////////////////JETS/////////////////////////////
-
-
 void airJets() { 
   
   CRGB targetColor = CRGB::Cyan;
 
   digitalWrite(soundPins[1],LOW); //Turn sound 2 on
   delay(200); // delay to allow for silence at start of sound file
-  blackEvens(); // Turn even LEDs black/off
+  blackLarge(); // Turn large LEDs black/off
   delay(200);
 
 
 // fade from off to full color brightness
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
-    leds[i] = targetColor;
+    for (int i=0; i < largeLEDS; i++){
+          leds[i] = targetColor;
     }
-      }
   }
    
   FastLED.show(); 
   delay(283);
 
-  blackEvens(); // Turn even LEDs black/off
+  blackLarge(); // Turn large LEDs black/off
   delay(100);
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
-    leds[i] = targetColor;
+    for (int i=0;i < largeLEDS; i++){
+          leds[i] = targetColor;
     }
-      }
+
   }
     
   FastLED.show(); 
   delay(316);
 
-  blackEvens(); // Turn even LEDs black/off
+  blackLarge(); // Turn large LEDs black/off
   delay(100);
     
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
+    for (int i=0;i < largeLEDS; i++){
     leds[i] = targetColor;
     }
-      }
   }
   FastLED.show(); 
   delay(503);    
 
-  blackEvens(); // Turn even LEDs black/off
+  blackLarge(); // Turn large LEDs black/off
   delay(100);
     
 
   for (int brightness = 0; brightness <= 255; brightness++){
-    for (int i=0;i <=NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
+    for (int i=0;i < largeLEDS; i++){
     leds[i] = targetColor;
       }
-    }
   }
   FastLED.show(); 
   delay(690);    
 
-  blackEvens(); // Turn even LEDs black/off
   digitalWrite(soundPins[1],HIGH); //Turn sound off again
   lastSoundTime = millis();  
   return;
 }
-
 
 ///////////////////////////////WARNING///////////////////////////////////////
 
@@ -316,21 +247,29 @@ void Warning() {
 int brightSteps = 220;
 digitalWrite(soundPins[2],LOW);
 
-// 256 brigness steps x 4 makes this too long for the sound length
+// 256 brightness steps x 4 makes this too long for the sound length
 // at least that's the conclusion I came to after too many hours
 // trying to get this to work.
 // 220 was perfect, but trying to loop it caused repeat of the sound 
-// so it's just pasted additional times...eh it works
+// so it's just pasted additional times...eh it works now
 
  
  for (int i = 0; i < brightSteps; i++) {
-   leds[0,2,4,6].r = i;
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
    FastLED.show();
    delay(500 /brightSteps);
  }
  // Fade the LED out
  for (int i = brightSteps; i >= 0; i--) {
-   leds[0,2,4,6].r = i;
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
    FastLED.show();
    delay(500 /brightSteps);
  }
@@ -338,20 +277,20 @@ digitalWrite(soundPins[2],LOW);
 /////////////////////////////////////////////2
  for (int i = 0; i < brightSteps; i++) {
    leds[0].r = i;
+   leds[1].r = i;
    leds[2].r = i;
+   leds[3].r = i;
    leds[4].r = i;
-   leds[6].r = i;
-   leds[8].r = i;
    FastLED.show();
    delay(500 /brightSteps);
  }
  // Fade the LED out
  for (int i = brightSteps; i >= 0; i--) {
    leds[0].r = i;
+   leds[1].r = i;
    leds[2].r = i;
+   leds[3].r = i;
    leds[4].r = i;
-   leds[6].r = i;
-   leds[8].r = i;
    FastLED.show();
    delay(500 /brightSteps);
 
@@ -359,51 +298,50 @@ digitalWrite(soundPins[2],LOW);
  }
   for (int i = 0; i < brightSteps; i++) {
    leds[0].r = i;
+   leds[1].r = i;
    leds[2].r = i;
+   leds[3].r = i;
    leds[4].r = i;
-   leds[6].r = i;
-   leds[8].r = i;
    FastLED.show();
    delay(500 /brightSteps);
  }
  // Fade the LED out
  for (int i = brightSteps; i >= 0; i--) {
    leds[0].r = i;
+   leds[1].r = i;
    leds[2].r = i;
+   leds[3].r = i;
    leds[4].r = i;
-   leds[6].r = i;
-   leds[8].r = i;
    FastLED.show();
    delay(500 /brightSteps);
  }
 /////////////////////////////////////////////4 
   for (int i = 0; i < 200; i++) {
    leds[0].r = i;
+   leds[1].r = i;
    leds[2].r = i;
+   leds[3].r = i;
    leds[4].r = i;
-   leds[6].r = i;
-   leds[8].r = i;
    FastLED.show();
    delay(500 /brightSteps);
  }
  // Fade the LED out
  for (int i = brightSteps; i >= 0; i--) {
    leds[0].r = i;
+   leds[1].r = i;
    leds[2].r = i;
+   leds[3].r = i;
    leds[4].r = i;
-   leds[6].r = i;
-   leds[8].r = i;
    FastLED.show();
    delay(500 /brightSteps);
  }
-blackEvens(); // Turn even LEDs black/off
 digitalWrite(soundPins[2],HIGH); 
+delay(20);
 lastSoundTime = millis();  
 return;
 }
 
 ////////////////////////////////////////SPARKS/////////////////////////////
-
 void sparks() { 
 
 // fileLength 1368ms
@@ -413,72 +351,71 @@ digitalWrite(soundPins[3],LOW); // Sound 4 on
 //delay for silence at start of file)
 delay(300);
           
-for (int i = 0; i < NUM_LEDS; i++) {
-  if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
+for (int i = 0; i < largeLEDS; i++) {
     leds[i] = CRGB::Blue;
     FastLED.show();
-  }
 }
 delay(400);
 
 
-for (int i = 0; i < NUM_LEDS; i++) {
-  if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
+for (int i = 0; i < largeLEDS; i++) {
     leds[i] = CRGB::Aqua;
     FastLED.show();
-  }
 }
 delay(300);
 
 
-for (int i = 0; i < NUM_LEDS; i++) {
-  if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
+for (int i = 0; i < largeLEDS; i++) {
     leds[i] = CRGB::DarkBlue;
     FastLED.show();
-  }
 }
 delay(600);
 
 
-for (int i = 0; i < NUM_LEDS; i++) {
-  if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
+for (int i = 0; i < largeLEDS; i++) {
     leds[i] = CRGB::Cyan;
     FastLED.show();
-  }
 }
-delay(200);
-      
- digitalWrite(soundPins[3], HIGH); // Sound 4 off
- blackAll(); // Turn even LEDs black/off
- lastSoundTime = millis();  
- return;
- 
-}
+delay(50);
 
+//strobe effect at end
+for (int i = 0; i <=2; i++){
+  
+  for (int j = smallLEDS; j < NUM_LEDS; j++){
+    leds[j] = CRGB::White;
+    FastLED.show();
+    delay(10);
+
+    leds[j] = CRGB::Black;
+    FastLED.show();
+    delay(10);
+   }
+}
+      
+digitalWrite(soundPins[3], HIGH); // Sound 4 off
+lastSoundTime = millis();  
+return;
+}
 
 ////////////////////////////////////////ELECTRICITY/////////////////////////////
-
-void electricity() {
-  
+void electricity(){  
   // This is just Confetti from the Examples file 
   // with different colors and added array in the pre setup
   // Random colored speckles that blink in and fade smoothly
 
   digitalWrite(soundPins[4],LOW); // Sound 5
-  blackEvens(); // Turn even LEDs black/off
-  delay(29); // Silence in audio file at the start
+  blackSmall(); // Turn small LEDs black/off
+  delay(150); // Silence in audio file at the start
   fadeToBlackBy(leds, NUM_LEDS, 10);
 
-  for (int i = 0; i < NUM_LEDS; i++) {
-    if (i == 0 || i == 2 || i == 4 || i == 6| i == 8) {
-      int pos = i; // Set the position to the even index
-      leds[pos] = colors[random8(3)];
+for (int j = 0; j < 32; j++){ // how many times to blink
+  for (int i = 0; i < largeLEDS; i++) {
+      leds[i] = colors[random8(3)];
       FastLED.show();
-      delay(20);// set blink speed
+      delay(15);// set blink speed
     }
-  }
-
-  blackEvens(); // Turn even LEDs black/off
+} 
+delay(10);
   digitalWrite(soundPins[4],HIGH); // Sound 5 off
   lastSoundTime = millis();  
   return;
@@ -491,7 +428,6 @@ void robot(){
   delay(3000);
 
 
-  blackEvens(); // Turn even LEDs black/off
   digitalWrite(soundPins[5],HIGH); // turn off LEDS
   lastSoundTime = millis();  
   return;
@@ -499,46 +435,60 @@ void robot(){
   
 }
 
+///////////////////////////////////RANDOM SMALL//////////////
 
+void randomSmall(int Rando){
 
-///////////////////////////////////RANDOM SPARKS//////////////
+Serial.println("Random Small is playing ");
 
-void randomSparks(int times){
+Serial.print("Random number is : ");
+Serial.println(Rando);
 
-for (int i = 0; i <=times; i++){
-  int randomNumbers = random(10); //0 - 9
-  int oddNumber = 2 * randomNumbers +1; //ensure it is odd
-   
-  leds[oddNumber] = CRGB::White;
+ 
+  leds[Rando] = CRGB::White;
   FastLED.show();
   
   delay(10);
 
-  leds[oddNumber] = CRGB::Black;
+  leds[Rando] = CRGB::Black;
   FastLED.show();
 
-  randomNumbers = 0;
-
   delay(10);
+}
+
+////////////////////////TEST LEDS//////////////////////
+void testLEDS(){
+
+  for (int i = 0; i < NUM_LEDS; i++){
+    leds[i] = CRGB::Red;
+    FastLED.show();
   }
+  delay(300);
 }
 
 //////////////////////////////////BLACK ALL/////////////////
 
-void blackAll(){
-      for (int i = 0; i <= NUM_LEDS; i++){
-      leds[i] = CRGB::Black;
+void blackALL(){
+      for (int t = 0; t < NUM_LEDS; t++){
+      leds[t] = CRGB::Black;
       FastLED.show(); 
        }
     }
 
-//////////////////////////////////BLACK EVENS/////////////////
+//////////////////////////////////BLACK LARGE/////////////////
 
-void blackEvens(){
-      for (int i = 0; i <= NUM_LEDS -1; i++){
-      if (i == 0 | i == 2| i == 4 | i == 6| i == 8){
-      leds[i] = CRGB::Black;
+void blackLarge(){
+      for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
       FastLED.show(); 
        }
-    }
+}
+
+//////////////////////////////////BLACK SMALL/////////////////
+
+void blackSmall(){
+      for (int i = smallLEDS+1; i < NUM_LEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
 }
