@@ -1,44 +1,46 @@
 #include <FastLED.h>
 
-/************************
+/************************Disaster of Puppets 2023*****************
  * Sound 1 - Lasers
  * Sound 2 - Air Jet movement
  * Sound 3 - Warning Siren 
  * Sound 4 - Sparks
  * Sound 5 - Electricity
  * Sound 6 - Robot
- ************************/
+ *****************************************************************/
 
 #define COLOR_ORDER GRB
 #define CHIPSET     WS2812
 #define BRIGHTNESS  255
 #define FRAMES_PER_SECOND 60
-
-int soundPins[] = {4, 5, 6, 7, 8, 9};
-const int numSounds = 6;
-const int NUM_LEDS = 9;
-const int ledPin = 10;
 bool gReverseDirection = false;
-const int largeLEDS = 5;
-const int smallLEDS =4;
 
+int soundPins[] = {4, 5, 6, 7, 8, 9}; // connections from Arduino to DY-SV8F board
+const int numSounds = 6;             // number of sounds loaded on the DY-SV8F board
+const int NUM_LEDS = 9;              // Total amount of LEDS on a full model this should be 12
+const int ledPin = 10;              // LED Pin on arduino
+const int largeLEDS = 5;            // for the full model this should be 6
+const int smallLEDS = 4;            //for the full model this should be 6
+int previousNumber = 0;             // Used so we don't play the same main animation / sound  twice in a row
+int previousRando = 0;              // Used so we don't play the same intermission in a row
 
 CRGB leds[NUM_LEDS];
-CRGB colors[] = {CRGB::White, CRGB::Yellow, CRGB::Blue};
+CRGB colors[] = {CRGB::White, CRGB::Yellow, CRGB::Blue}; // for function to randomly select a color
 unsigned long randomDelay;
 unsigned long lastSoundTime;
-int minDelay = 1500; // 2.5 minutes
-int maxDelay = 3000; // 5 minutes
-char *Tracks[] = {"Lasers","Jets","Warning","Overload","Electricity","Robot"};
+int minDelay = 1000; // 10 seconds change this to set the minimum time between main animations
+int maxDelay = 2000; // 20 seconds change this to set the minimum time between main animations
 int randoTrack;
+int Rando;
 
 void setup() 
 {
 
 FastLED.addLeds<CHIPSET, ledPin, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
 randomSeed(analogRead(0)); // Initialize random seed
-FastLED.show(); // Initialize LED with all LEDs off
+FastLED.show(); // Initialize LED strip with all LEDs off
 
+// make sure all sounds are off
 for (int i =0; i < numSounds; i++){
   pinMode(soundPins[i], OUTPUT);
   digitalWrite(soundPins[i],HIGH);
@@ -52,24 +54,25 @@ Serial.begin(9600);
 
 void loop() {
 
-blackALL();
+blackALL(); // clear all LEDS
 delay(500);
 
+/* //monitoring
 Serial.print("Random Delay ");
 Serial.println(randomDelay);
 Serial.print("Time since last sound ");
 Serial.println(lastSoundTime);
+*/
 
 unsigned long currentMillis = millis();
 
 //if (currentMillis - lastSoundTime >= 1111111111111111111111111111) { // testing waiting period animation on smaller leds
 if (currentMillis - lastSoundTime >= randomDelay) {
-// choose random sound
-//randoTrack = random(0,numSounds); 
-randoTrack = 5; // For testing
-     
-
-      
+// choose random sound without playing the same one in succession
+     while (randoTrack == previousNumber){
+     randoTrack = random(0,numSounds); 
+    } 
+    previousNumber = randoTrack;
 
       if (randoTrack == 0){
         Serial.println("Lasers");
@@ -109,11 +112,13 @@ randoTrack = 5; // For testing
       delay(1000);// stop the serial spam
       Serial.print("Current count ");
       Serial.println(currentMillis);  
-      int Rando = random(0,4); //Random number between 0 and 3
-      Serial.print("Rando is ");
-      Serial.println(Rando); 
+      // set random animation without repeating the previously chosen
+      while (Rando == previousRando){
+        Rando = random(0,4); //Random number between 0 and 3
+      }
+      previousRando = Rando;
       //testLEDS(); // uncomment this and comment out below to confirm you have all leds wired and working
-      randomSmall(Rando);
+      intermission(Rando);
     }
 }
 
@@ -513,15 +518,16 @@ delay(500);//silence at start of audio file
   
 }
 
-///////////////////////////////////RANDOM SMALL//////////////
+///////////////////////////////////INTERMISSION//////////////
 
-void randomSmall(int Rando){
+void intermission(int Rando){
 
-Serial.println("Random Small is playing ");
-Serial.println(Rando);
+
 int brightSteps = 220;
 
 if (Rando == 0) { // SEQUENTIAL BLINK
+Serial.println("Sequential Blink ");
+  
   blackLarge();
   delay(100);
 
@@ -552,6 +558,7 @@ if (Rando == 0) { // SEQUENTIAL BLINK
 }
 
 else if (Rando == 1) { // CHASE
+  Serial.println("Sequential Chase ");
   blackLarge();
   delay(10);
 
@@ -575,6 +582,7 @@ else if (Rando == 1) { // CHASE
   }
 }
 else if (Rando == 2){ //random colors
+  Serial.println("Random Colors ");
 blackLarge();
 delay(10);
 
@@ -598,7 +606,8 @@ delay(10);
     }
 }
 else if (Rando == 3) { // sparkles
-    blackLarge();
+  Serial.println("Sparkles");
+  blackLarge();
   delay(100);
   int selectedLED = random(smallLEDS + 1, NUM_LEDS);
   int NL = -9999; // Initialize to a "null" value
