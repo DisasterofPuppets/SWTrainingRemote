@@ -65,8 +65,8 @@ unsigned long currentMillis = millis();
 //if (currentMillis - lastSoundTime >= 1111111111111111111111111111) { // testing waiting period animation on smaller leds
 if (currentMillis - lastSoundTime >= randomDelay) {
 // choose random sound
-randoTrack = random(0,numSounds); 
-//randoTrack = 5; // For testing
+//randoTrack = random(0,numSounds); 
+randoTrack = 5; // For testing
      
 
       
@@ -109,11 +109,11 @@ randoTrack = random(0,numSounds);
       delay(1000);// stop the serial spam
       Serial.print("Current count ");
       Serial.println(currentMillis);  
-      int Rando = random(smallLEDS + 1,NUM_LEDS);
+      int Rando = random(0,4); //Random number between 0 and 3
       Serial.print("Rando is ");
       Serial.println(Rando); 
-      //testLEDS(); uncomment this and comment out below to confirm you have all leds wired and working
-       randomSmall(Rando);
+      //testLEDS(); // uncomment this and comment out below to confirm you have all leds wired and working
+      randomSmall(Rando);
     }
 }
 
@@ -424,14 +424,92 @@ delay(10);
 ////////////////////////////////////////ROBOT/////////////////////////////
 
 void robot(){
-  digitalWrite(soundPins[5],LOW); // Sound 6
-  delay(3000);
 
+int brightness = 255;
+blackALL();
+delay(100);
+  
+  digitalWrite(soundPins[5],LOW); // Sound 6
+delay(500);//silence at start of audio file
+
+        // LEDs on 1
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+        delay(100);
+
+        //off
+        blackLarge();
+        delay(100);
+
+        // LEDs on 2
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+        delay(300);
+
+        //off
+        blackLarge();
+        delay(50);
+
+        // LEDs on 3
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+        delay(400);
+
+        //off
+        blackLarge();
+        delay(100);
+
+         // LEDs on 4
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+        delay(400);
+
+         //off
+        blackLarge();
+        delay(200);
+
+         // LEDs on 5 less bright
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB(brightness-150,brightness-150,brightness-150);
+        }
+        FastLED.show();
+        delay(100);
+
+  //off
+        blackLarge();
+        delay(100);
+
+         // LEDs on 6 less bright again
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB(brightness-200,brightness-200,brightness-200);
+        }
+        FastLED.show();
+        delay(100);
+
+        blackLarge();
+        delay(50);
+
+         // LEDs on 7 less bright again
+         for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB(brightness-200,brightness-200,brightness-200);
+        }
+          FastLED.show();
+          delay(150);
+        
+        blackLarge();
+        delay(10);
 
   digitalWrite(soundPins[5],HIGH); // turn off LEDS
   lastSoundTime = millis();  
   return;
-
   
 }
 
@@ -440,22 +518,151 @@ void robot(){
 void randomSmall(int Rando){
 
 Serial.println("Random Small is playing ");
-
-Serial.print("Random number is : ");
 Serial.println(Rando);
+int brightSteps = 220;
 
- 
-  leds[Rando] = CRGB::White;
-  FastLED.show();
-  
-  delay(10);
+if (Rando == 0) { // SEQUENTIAL BLINK
+  blackLarge();
+  delay(100);
 
-  leds[Rando] = CRGB::Black;
-  FastLED.show();
+  for (int pass = 0; pass < 5; pass++) {  // Repeat the sequence 5 times
+    // Generate random colors for each pass
+    int randomR = random(256);
+    int randomG = random(256);
+    int randomB = random(256);
 
-  delay(10);
+    // Fade in
+    for (int j = 0; j < brightSteps; j++) {
+      for (int i = 5; i <= 8; i++) {
+        leds[i] = CRGB(randomR, randomG, randomB);
+      }
+      FastLED.show();
+      delay(500 / brightSteps);
+    }
+
+    // Fade out
+    for (int j = brightSteps; j >= 0; j--) {
+      for (int i = 5; i <= 8; i++) {
+        leds[i] = CRGB(randomR, randomG, randomB);
+      }
+      FastLED.show();
+      delay(500 / brightSteps);
+    }
+  }
 }
 
+else if (Rando == 1) { // CHASE
+  blackLarge();
+  delay(10);
+
+  for (int i = smallLEDS + 1; i < NUM_LEDS; i++) {
+    int randomR = random(256);
+    int randomG = random(256);
+    int randomB = random(256);
+
+    for (int j = 0; j < brightSteps; j++) {
+      leds[i] = CRGB(randomR, randomG, randomB);
+      FastLED.show();
+      delay(100 / brightSteps);
+    }
+
+    // Fade the LED out
+    for (int j = brightSteps; j >= 0; j--) {
+      leds[i] = CRGB(randomR, randomG, randomB);
+      FastLED.show();
+      delay(100 / brightSteps);
+    }
+  }
+}
+else if (Rando == 2){ //random colors
+blackLarge();
+delay(10);
+
+
+  for (int i =smallLEDS +1; i < NUM_LEDS; i++){
+    int randomR = random(256);
+    int randomG = random(256);
+    int randomB = random(256);
+    
+   
+    // Turn on the LED with a random color
+    leds[i] = CRGB(randomR, randomG, randomB);
+    FastLED.show();
+
+    // Delay for a duration to keep the LED on
+    delay(500); // Adjust the delay duration as needed
+
+    // Turn off the LED by setting it to black
+    leds[i] = CRGB(0, 0, 0);
+    FastLED.show();
+    }
+}
+else if (Rando == 3) { // sparkles
+    blackLarge();
+  delay(100);
+  int selectedLED = random(smallLEDS + 1, NUM_LEDS);
+  int NL = -9999; // Initialize to a "null" value
+  int NR = -9999; // Initialize to a "null" value
+
+  if (selectedLED == 5) {
+    NL = -9999; // NULL
+    NR = 6;
+  } else if (selectedLED == 6) {
+    NL = 5;
+    NR = 7;
+  } else if (selectedLED == 7) {
+    NL = 6;
+    NR = 8;
+  } else if (selectedLED == 8) {
+    NL = 7;
+    NR = -9999;
+  }
+
+  FastLED.show();
+  delay(300);
+
+  // Fade in the main LED
+ // Fade in the main LED
+  for (int bright = 0; bright < 256; bright++) {
+    leds[selectedLED] = CRGB(bright, bright, bright);
+    FastLED.show();
+    delay(5); // Adjust delay for desired fading speed
+  }
+
+  // Fade in the neighboring LEDs to a lower brightness
+  for (int bright = 0; bright < 201; bright++) {
+    if (NL != -9999) {
+      leds[NL] = CRGB(bright, bright, bright);
+    }
+
+    if (NR != -9999) {
+      leds[NR] = CRGB(bright, bright, bright);
+    }
+
+    FastLED.show();
+    delay(5); // Adjust delay for desired fading speed
+  }
+
+  // Delay after max brightness is reached
+  delay(200);
+
+  // Fade out all three LEDs
+  for (int bright = 255; bright >= 0; bright--) {
+    leds[selectedLED] = CRGB(bright, bright, bright);
+
+    if (NL != -9999) {
+      leds[NL] = CRGB(bright, bright, bright);
+    }
+
+    if (NR != -9999) {
+      leds[NR] = CRGB(bright, bright, bright);
+    }
+
+    FastLED.show();
+    delay(5); // Adjust delay for desired fading speed
+  }
+}
+}
 ////////////////////////TEST LEDS//////////////////////
 void testLEDS(){
 
