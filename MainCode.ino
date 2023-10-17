@@ -1,3 +1,4 @@
+//moved crystal led to own pin
 //remove the crystal function trigger as it doesn't work as expected yet
 
 #include <FastLED.h>
@@ -21,12 +22,15 @@ int soundPins[] = {4, 5, 6, 7, 8, 9}; // connections from Arduino to DY-SV8F boa
 const int numSounds = 6;             // number of sounds loaded on the DY-SV8F board
 const int NUM_LEDS = 10;              // Total amount of LEDS on a full model this should be 12 + 1 for the Crystal LED
 const int ledPin = 10;              // LED Pin on arduino
+const int LED = 1;                  // Crystal LED (one strip with one led)
+const int crystalPin = 3;   
 const int largeLEDS = 5;            // for the full model this should be 6
 const int smallLEDS = 4;            //for the full model this should be 6
 int previousNumber = 0;             // Used so we don't play the same main animation / sound  twice in a row
 int previousRando = 0;              // Used so we don't play the same intermission in a row
 
 CRGB leds[NUM_LEDS];
+CRGB cleds[LED];
 CRGB colors[] = {CRGB::White, CRGB::Yellow, CRGB::Blue}; // for function to randomly select a color
 unsigned long randomDelay;
 unsigned long lastSoundTime;
@@ -41,6 +45,7 @@ void setup()
 {
 
 FastLED.addLeds<CHIPSET, ledPin, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+FastLED.addLeds<CHIPSET, crystalPin, COLOR_ORDER>(cleds, LED).setCorrection( TypicalLEDStrip );
 randomSeed(analogRead(0)); // Initialize random seed
 FastLED.show(); // Initialize LED strip with all LEDs off
 
@@ -731,14 +736,13 @@ void crystal(){
 
 int someDelay = random(0,11);
   
-for (int j = 0; j < NUM_LEDS; j++) {
-    leds[j] = CRGB(0, 0, 0); // Turn off all LEDs
-  }
-  FastLED.show();
+
+    cleds[0] = CRGB(0, 0, 0); // Turn off all LEDs
+    FastLED.show();
 
   // Fade the last LED from off to max brightness in green
   for (int i = 0; i <= 255; i++) {
-    leds[NUM_LEDS - 1] = CRGB(0, i, 0); // Set the green component to i for the last LED
+    cleds[0] = CRGB(0, i, 0); // Set the green component to i for the last LED
     FastLED.show();
     delay(someDelay); // Delay for smooth fading
   }
@@ -746,7 +750,7 @@ for (int j = 0; j < NUM_LEDS; j++) {
 someDelay= random(0,11);  // Fade the last LED from max brightness to off with the same color
 
   for (int i = 255; i >= 0; i--) {
-    leds[NUM_LEDS - 1] = CRGB(0, i, 0); // Set the green component to i for the last LED
+    cleds[0] = CRGB(0, i, 0); // Set the green component to i for the last LED
     FastLED.show();
     delay(someDelay); // Delay for smooth fading
   }
