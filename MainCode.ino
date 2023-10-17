@@ -1,3 +1,5 @@
+//remove the crystal function trigger as it doesn't work as expected yet
+
 #include <FastLED.h>
 
 /************************Disaster of Puppets 2023*****************
@@ -17,7 +19,7 @@ bool gReverseDirection = false;
 
 int soundPins[] = {4, 5, 6, 7, 8, 9}; // connections from Arduino to DY-SV8F board
 const int numSounds = 6;             // number of sounds loaded on the DY-SV8F board
-const int NUM_LEDS = 9;              // Total amount of LEDS on a full model this should be 12
+const int NUM_LEDS = 10;              // Total amount of LEDS on a full model this should be 12 + 1 for the Crystal LED
 const int ledPin = 10;              // LED Pin on arduino
 const int largeLEDS = 5;            // for the full model this should be 6
 const int smallLEDS = 4;            //for the full model this should be 6
@@ -28,8 +30,10 @@ CRGB leds[NUM_LEDS];
 CRGB colors[] = {CRGB::White, CRGB::Yellow, CRGB::Blue}; // for function to randomly select a color
 unsigned long randomDelay;
 unsigned long lastSoundTime;
-int minDelay = 1000; // 10 seconds change this to set the minimum time between main animations
-int maxDelay = 2000; // 20 seconds change this to set the minimum time between main animations
+unsigned long lastCrystalTime;
+unsigned long crystalInterval = 10;
+int minDelay = 1000; // 1 seconds change this to set the minimum time between main animations
+int maxDelay = 2000; // 2 seconds change this to set the minimum time between main animations
 int randoTrack;
 int Rando;
 
@@ -54,17 +58,30 @@ Serial.begin(9600);
 
 void loop() {
 
+// first we want to turn on the continuous crystal animation
+unsigned long currentMillis = millis();
+if (currentMillis - lastCrystalTime >= crystalInterval){
+    crystal();
+    lastCrystalTime = currentMillis;
+}
+
 blackALL(); // clear all LEDS
 delay(500);
 
-/* //monitoring
+
+/*
+testLEDS(); // uncomment this and comment out below to confirm you have all leds wired and working
+delay(10000);
+
+
+//monitoring
 Serial.print("Random Delay ");
 Serial.println(randomDelay);
 Serial.print("Time since last sound ");
 Serial.println(lastSoundTime);
 */
 
-unsigned long currentMillis = millis();
+
 
 //if (currentMillis - lastSoundTime >= 1111111111111111111111111111) { // testing waiting period animation on smaller leds
 if (currentMillis - lastSoundTime >= randomDelay) {
@@ -73,7 +90,6 @@ if (currentMillis - lastSoundTime >= randomDelay) {
      randoTrack = random(0,numSounds); 
     } 
     previousNumber = randoTrack;
-
       if (randoTrack == 0){
         Serial.println("Lasers");
         lasers();
@@ -106,6 +122,7 @@ if (currentMillis - lastSoundTime >= randomDelay) {
                 }
 }
     else{ // if timer not met
+
       Serial.print("Waiting.....");
       Serial.print(randomDelay);
       Serial.println(" milliseconds");
@@ -117,7 +134,6 @@ if (currentMillis - lastSoundTime >= randomDelay) {
         Rando = random(0,4); //Random number between 0 and 3
       }
       previousRando = Rando;
-      //testLEDS(); // uncomment this and comment out below to confirm you have all leds wired and working
       intermission(Rando);
     }
 }
@@ -386,7 +402,7 @@ delay(50);
 //strobe effect at end
 for (int i = 0; i <=2; i++){
   
-  for (int j = smallLEDS; j < NUM_LEDS; j++){
+  for (int j = smallLEDS; j < NUM_LEDS -1 ; j++){ // -1 so Crsyatl LED is not changed
     leds[j] = CRGB::White;
     FastLED.show();
     delay(10);
@@ -411,7 +427,7 @@ void electricity(){
   digitalWrite(soundPins[4],LOW); // Sound 5
   blackSmall(); // Turn small LEDs black/off
   delay(150); // Silence in audio file at the start
-  fadeToBlackBy(leds, NUM_LEDS, 10);
+  fadeToBlackBy(leds, NUM_LEDS -1, 10); // -1 so Crsyatl LED is not changed
 
 for (int j = 0; j < 32; j++){ // how many times to blink
   for (int i = 0; i < largeLEDS; i++) {
@@ -562,7 +578,7 @@ else if (Rando == 1) { // CHASE
   blackLarge();
   delay(10);
 
-  for (int i = smallLEDS + 1; i < NUM_LEDS; i++) {
+  for (int i = smallLEDS + 1; i < NUM_LEDS -1 ; i++) {// -1 so Crsyatl LED is not changed
     int randomR = random(256);
     int randomG = random(256);
     int randomB = random(256);
@@ -587,7 +603,7 @@ blackLarge();
 delay(10);
 
 
-  for (int i =smallLEDS +1; i < NUM_LEDS; i++){
+  for (int i =smallLEDS +1; i < NUM_LEDS -1; i++){ // -1 so Crsyatl LED is not changed
     int randomR = random(256);
     int randomG = random(256);
     int randomB = random(256);
@@ -609,7 +625,7 @@ else if (Rando == 3) { // sparkles
   Serial.println("Sparkles");
   blackLarge();
   delay(100);
-  int selectedLED = random(smallLEDS + 1, NUM_LEDS);
+  int selectedLED = random(smallLEDS + 1, NUM_LEDS -1); // -1 so Crsyatl LED is not changed
   int NL = -9999; // Initialize to a "null" value
   int NR = -9999; // Initialize to a "null" value
 
@@ -685,7 +701,7 @@ void testLEDS(){
 //////////////////////////////////BLACK ALL/////////////////
 
 void blackALL(){
-      for (int t = 0; t < NUM_LEDS; t++){
+      for (int t = 0; t < NUM_LEDS -1 ; t++){ //-1 so we don't clear Crystal LED
       leds[t] = CRGB::Black;
       FastLED.show(); 
        }
@@ -703,8 +719,38 @@ void blackLarge(){
 //////////////////////////////////BLACK SMALL/////////////////
 
 void blackSmall(){
-      for (int i = smallLEDS+1; i < NUM_LEDS; i++){
+      for (int i = smallLEDS+1; i < NUM_LEDS -1; i++){ //-1 so we don't clear the crystal LED
        leds[i] = CRGB::Black;
       FastLED.show(); 
        }
+}
+
+//////////////////////////////////CRYSTAL///////////////////////
+
+void crystal(){
+
+int someDelay = random(0,11);
+  
+for (int j = 0; j < NUM_LEDS; j++) {
+    leds[j] = CRGB(0, 0, 0); // Turn off all LEDs
+  }
+  FastLED.show();
+
+  // Fade the last LED from off to max brightness in green
+  for (int i = 0; i <= 255; i++) {
+    leds[NUM_LEDS - 1] = CRGB(0, i, 0); // Set the green component to i for the last LED
+    FastLED.show();
+    delay(someDelay); // Delay for smooth fading
+  }
+
+someDelay= random(0,11);  // Fade the last LED from max brightness to off with the same color
+
+  for (int i = 255; i >= 0; i--) {
+    leds[NUM_LEDS - 1] = CRGB(0, i, 0); // Set the green component to i for the last LED
+    FastLED.show();
+    delay(someDelay); // Delay for smooth fading
+  }
+
+  lastCrystalTime = millis();  
+  return;
 }
