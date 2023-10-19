@@ -1,0 +1,148 @@
+// Flashed using ESP32 board - DOIT ESP32 DEVKIT V1
+// When uploading you need to press the BOOT button when Serial is connecting
+
+/* HARDWARE LIST ///////////////////////////////////////////////////////////
+
+- ESP32 (I'm using a 'DOIT ESP32 DEVKIT V1' board. You may need to double check pin numbers as they may differ from the wiring diagram)
+- WS2812B Individually Addressible LED Strip (or similar)
+- DY-SV8F Amplifier board
+- 4 Ohm 5W Speaker
+
+*///////////////////////////////////////////////////////////////////////////
+
+
+/************************Disaster of Puppets 2023*****************
+ * Sound 1 - Lasers
+ * Sound 2 - Air Jet movement
+ * Sound 3 - Warning Siren 
+ * Sound 4 - Sparks
+ * Sound 5 - Electricity
+ * Sound 6 - Robot
+ *****************************************************************/
+
+//////////////////////////////////////////////////////////// INCLUDES
+#include <FastLED.h>        //LED CONTROL LIBRARY
+#include <Arduino.h>        // for the tasks library
+//////////////////////////////////////////////////////////// DEFINES
+
+// HARDWARE PINS
+
+/* Pins 34,35, 36 and 39 are input only (These may differ for your ESP32)
+   Builtin LED is GPIO2
+*/
+const int ledPin = 15; // Pin for controlling the LED stip on the ESP32 (GPI12)
+const int crystalSwitch = 33; // Pin for controlling the LED stip on the ESP32 (GPIO34)
+
+
+int soundPins[] = {13, 12, 14, 27, 26, 25}; // connections from Arduino to DY-SV8F board (D13,D12,D14,D27,D26,D25)
+
+// HARDWARE SETTINGS
+
+const int numSounds = 6; //number of sounds on the DY-SV8F
+
+// FASTLED SETTINGS
+
+const int NUM_LEDS = 10;  // Amount of LEDS in the Strip (For a full model this would be 12 + 1 for the crystal
+// Dont fall into the trap of trying to address the last LED as the number above. While we define the real world amount of LEDS here, 
+// Arduino usually addresses them from 0 - 9 (in the case of 10 being declared)
+const int largeLEDS = 5; // Amount of LEDS in the larger holes (6 for full model)
+const int smallLEDS = 5; // Amount of LEDS in the smaller holes (6 for full model)
+
+#define COLOR_ORDER GRB
+#define CHIPSET     WS2812
+bool gReverseDirection = false;
+
+CRGB leds[NUM_LEDS];
+CRGB colors[] = {CRGB::White, CRGB::Yellow, CRGB::Blue}; // for function to randomly select a color
+
+// TIMERS and MISC
+
+unsigned long randomDelay;           // holds random delay number
+unsigned long lastSoundTime;        // holds last time run in each function
+int randoTrack;                     // holds the random track selection
+int Rando;                          // holds the random intermission setting
+
+int minDelay = 1000; // 10 seconds change this to set the minimum time between main animations
+int maxDelay = 2000; // 20 seconds change this to set the minimum time between main animations
+
+int previousNumber = 0;             // Used so we don't play the same main animation / sound  twice in a row
+int previousRando = 0;              // Used so we don't play the same intermission in a row
+
+
+//////////////TASKS
+
+void crystalLED(void * parameters){
+  for (;;){
+    Serial.println("Crystal LED");
+    Serial.println(digitalRead(crystalSwitch)); 
+// CHECK IF THE SWITCH IS OPEN
+  int switchState = digitalRead(crystalSwitch);
+  if (switchState == 1){ // Open Closed is 0
+    
+    int someDelay = random(0,11);
+
+
+// Fade the last LED from off to max brightness in green
+    for (int i = 0; i <= 255; i++) {
+      leds[NUM_LEDS -1] = CRGB(0, i, 0); // Set the green component to i for the last LED
+     FastLED.show();
+     vTaskDelay(someDelay / portTICK_PERIOD_MS);// Delay for smooth fading
+    }
+
+    someDelay= random(0,11);  // Fade the last LED from max brightness to off with the same color
+
+    for (int i = 255; i >= 0; i--) {
+      leds[NUM_LEDS -1] = CRGB(0, i, 0); // Set the green component to i for the last LED
+      FastLED.show();
+      vTaskDelay(someDelay / portTICK_PERIOD_MS);// Delay for smooth fading
+    }
+     vTaskDelay(1000 / portTICK_PERIOD_MS); // converts ticks to ms  in this case 1 second
+   }
+
+}
+
+}    
+
+
+//////////////////////////////////////////////////////////// SETUP
+
+void setup(){
+
+//////////////////TASK PRIORITY
+
+
+xTaskCreate(
+  crystalLED,     // function name
+  "Crystal LED",  // task name
+  1000,           // stack size
+  NULL,           // task parameters
+  1,              // priority (lower number = lower priority)
+  NULL            // task handle
+);
+
+
+//FASTLED
+FastLED.addLeds<CHIPSET, ledPin, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+randomSeed(analogRead(0)); // Initialize random seed
+FastLED.show(); // Initialize LED strip with all LEDs off
+
+// AUDIO
+
+// make sure all sounds are off
+for (int i =0; i < numSounds; i++){
+  pinMode(soundPins[i], OUTPUT);
+  digitalWrite(soundPins[i],HIGH);
+  //  turn off sounds on start
+
+}
+
+pinMode(crystalSwitch,INPUT_PULLUP);
+
+Serial.begin(9600); // for debugging
+  
+}
+
+//////////////////////////////////////////////////////////// LOOP
+void loop(){
+    
+}
