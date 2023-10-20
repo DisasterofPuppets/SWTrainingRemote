@@ -558,6 +558,182 @@ vTaskDelay(150 / portTICK_PERIOD_MS);
         randomDelay = random(minDelay,maxDelay);
         }
      }
+  else{ // if timer not met
+  /////////////////////////////////////////////INTERMISSION ANIMATIONS////////////////////////
+  
+      Serial.print("Waiting.....");
+      Serial.print(randomDelay);
+      Serial.println(" milliseconds");
+vTaskDelay(1000 / portTICK_PERIOD_MS);
+      Serial.print("Current count ");
+      Serial.println(currentMillis);  
+      // set random animation without repeating the previously chosen
+      while (Rando == previousRando){
+        Rando = random(0,4); //Random number between 0 and 3
+      }
+      previousRando = Rando;
+int brightSteps = 220;
+
+if (Rando == 0) { // SEQUENTIAL BLINK
+Serial.println("Sequential Blink ");
+  
+   for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+  for (int pass = 0; pass < 5; pass++) {  // Repeat the sequence 5 times
+    // Generate random colors for each pass
+    int randomR = random(256);
+    int randomG = random(256);
+    int randomB = random(256);
+
+    // Fade in
+    for (int j = 0; j < brightSteps; j++) {
+      for (int i = 5; i <= 8; i++) {
+        leds[i] = CRGB(randomR, randomG, randomB);
+      }
+      FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) / brightSteps);
+    }
+
+    // Fade out
+    for (int j = brightSteps; j >= 0; j--) {
+      for (int i = 5; i <= 8; i++) {
+        leds[i] = CRGB(randomR, randomG, randomB);
+      }
+      FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) / brightSteps);
+    }
+  }
+}
+
+else if (Rando == 1) { // CHASE
+  Serial.println("Sequential Chase ");
+   for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(10 / portTICK_PERIOD_MS);
+
+  for (int i = smallLEDS + 1; i < NUM_LEDS; i++) {
+    int randomR = random(256);
+    int randomG = random(256);
+    int randomB = random(256);
+
+    for (int j = 0; j < brightSteps; j++) {
+      leds[i] = CRGB(randomR, randomG, randomB);
+      FastLED.show();
+vTaskDelay((100 / portTICK_PERIOD_MS) / brightSteps);
+    }
+
+    // Fade the LED out
+    for (int j = brightSteps; j >= 0; j--) {
+      leds[i] = CRGB(randomR, randomG, randomB);
+      FastLED.show();
+vTaskDelay((100 / portTICK_PERIOD_MS) / brightSteps);
+    }
+  }
+}
+else if (Rando == 2){ //random colors
+  Serial.println("Random Colors ");
+   for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(10 / portTICK_PERIOD_MS);
+
+
+  for (int i =smallLEDS +1; i < NUM_LEDS; i++){
+    int randomR = random(256);
+    int randomG = random(256);
+    int randomB = random(256);
+    
+   
+    // Turn on the LED with a random color
+    leds[i] = CRGB(randomR, randomG, randomB);
+    FastLED.show();
+
+    // Delay for a duration to keep the LED on
+vTaskDelay(500 / portTICK_PERIOD_MS); // Adjust the delay duration as needed
+
+    // Turn off the LED by setting it to black
+    leds[i] = CRGB(0, 0, 0);
+    FastLED.show();
+    }
+}
+else if (Rando == 3) { // sparkles
+  Serial.println("Sparkles");
+   for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(100 / portTICK_PERIOD_MS);
+  int selectedLED = random(smallLEDS + 1, NUM_LEDS);
+  int NL = -9999; // Initialize to a "null" value
+  int NR = -9999; // Initialize to a "null" value
+
+  if (selectedLED == 5) {
+    NL = -9999; // NULL
+    NR = 6;
+  } else if (selectedLED == 6) {
+    NL = 5;
+    NR = 7;
+  } else if (selectedLED == 7) {
+    NL = 6;
+    NR = 8;
+  } else if (selectedLED == 8) {
+    NL = 7;
+    NR = -9999;
+  }
+
+  FastLED.show();
+vTaskDelay(300 / portTICK_PERIOD_MS);
+
+  // Fade in the main LED
+ // Fade in the main LED
+  for (int bright = 0; bright < 256; bright++) {
+    leds[selectedLED] = CRGB(bright, bright, bright);
+    FastLED.show();
+vTaskDelay(5 / portTICK_PERIOD_MS);// Adjust delay for desired fading speed
+  }
+
+  // Fade in the neighboring LEDs to a lower brightness
+  for (int bright = 0; bright < 201; bright++) {
+    if (NL != -9999) {
+      leds[NL] = CRGB(bright, bright, bright);
+    }
+
+    if (NR != -9999) {
+      leds[NR] = CRGB(bright, bright, bright);
+    }
+
+    FastLED.show();
+vTaskDelay(5 / portTICK_PERIOD_MS); // Adjust delay for desired fading speed
+  }
+
+  // Delay after max brightness is reached
+vTaskDelay(200 / portTICK_PERIOD_MS);
+
+  // Fade out all three LEDs
+  for (int bright = 255; bright >= 0; bright--) {
+    leds[selectedLED] = CRGB(bright, bright, bright);
+
+    if (NL != -9999) {
+      leds[NL] = CRGB(bright, bright, bright);
+    }
+
+    if (NR != -9999) {
+      leds[NR] = CRGB(bright, bright, bright);
+    }
+
+    FastLED.show();
+vTaskDelay(5 / portTICK_PERIOD_MS);// Adjust delay for desired fading speed
+  }
+}
+ 
+}
   }
 }
 //////////////////////////////////////////////////////////// SETUP
@@ -584,7 +760,6 @@ xTaskCreate(
   10,              // priority (lower number = lower priority)
   NULL            // task handle
 );
-
 
 //FASTLED
 FastLED.addLeds<CHIPSET, ledPin, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
