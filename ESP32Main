@@ -35,6 +35,7 @@ const int crystalSwitch = 33; // Pin for controlling the LED stip on the ESP32 (
 
 
 int soundPins[] = {13, 12, 14, 27, 26, 25}; // connections from Arduino to DY-SV8F board (D13,D12,D14,D27,D26,D25)
+// *******you may need to detach pin 12 during upload if you get a fatal error occurred*****
 
 // HARDWARE SETTINGS
 
@@ -102,8 +103,463 @@ void crystalLED(void * parameters){
 }
 
 }    
+///////////////////////////////////////////////////////////////////
+
+void mainAnimation(void * parameters){
+  for (;;){
+
+      unsigned long currentMillis = millis();
+      if (currentMillis - lastSoundTime >= randomDelay) {       // choose random sound without playing the same one in succession
+        while (randoTrack == previousNumber){
+        randoTrack = random(0,numSounds); 
+      } 
+      previousNumber = randoTrack;
+
+      if (randoTrack == 0){
+        Serial.println("Lasers");
+ 
+        ////////////////////////////////////////LASERS/////////////////////////////
+
+  //trigger audio file 1
+  digitalWrite(soundPins[0],LOW); // Play sound 1(0)
+  //delay for silence at start of audio
+vTaskDelay(300 / portTICK_PERIOD_MS);
+
+//Move LED along strip First shot
+    for (int i = 0; i < largeLEDS; i++) {
+      leds[i] = CRGB::Red;
+      FastLED.show();
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      leds[i] = CRGB::Black;
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      FastLED.show();
+    }
+    //delay between shots
+vTaskDelay(800 / portTICK_PERIOD_MS);
+
+//2nd shot
+    for (int i = 0; i < largeLEDS; i++) {
+      leds[i] = CRGB::Red;
+      FastLED.show();
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      leds[i] = CRGB::Black;
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      FastLED.show();
+    }
+    //delay between shots
+vTaskDelay(800 / portTICK_PERIOD_MS);
+//3rd
+    for (int i = 0; i < largeLEDS; i++) {
+      leds[i] = CRGB::Red;
+      FastLED.show();
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      leds[i] = CRGB::Black;
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      FastLED.show();
+    }
+    //delay between shots
+vTaskDelay(50 / portTICK_PERIOD_MS);
+//4th
+    for (int i = 0; i < largeLEDS; i++) {
+      leds[i] = CRGB::Red;
+      FastLED.show();
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      leds[i] = CRGB::Black;
+vTaskDelay(20 / portTICK_PERIOD_MS);
+      FastLED.show();
+    }
+
+  digitalWrite(soundPins[0],HIGH); //stop the sound
+  lastSoundTime = millis();  
+        
+        randomDelay = random(minDelay,maxDelay);
+      }
+      else if (randoTrack == 1){
+        Serial.println("Jets");
+
+        ////////////////////////////////////////JETS/////////////////////////////
+
+CRGB targetColor = CRGB::Cyan;
+
+  digitalWrite(soundPins[1],LOW); //Turn sound 2 on
+vTaskDelay(200 / portTICK_PERIOD_MS); // delay to allow for silence at start of sound file
+  for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }; // Turn large LEDs black/off
+vTaskDelay(200 / portTICK_PERIOD_MS);
 
 
+// fade from off to full color brightness
+
+  for (int brightness = 0; brightness <= 255; brightness++){
+    for (int i=0; i < largeLEDS; i++){
+          leds[i] = targetColor;
+    }
+  }
+   
+  FastLED.show(); 
+vTaskDelay(283 / portTICK_PERIOD_MS);
+
+  for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }; // Turn large LEDs black/off
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+  for (int brightness = 0; brightness <= 255; brightness++){
+    for (int i=0;i < largeLEDS; i++){
+          leds[i] = targetColor;
+    }
+
+  }
+    
+  FastLED.show(); 
+vTaskDelay(316 / portTICK_PERIOD_MS);
+
+  for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }; // Turn large LEDs black/off
+vTaskDelay(100 / portTICK_PERIOD_MS);
+    
+
+  for (int brightness = 0; brightness <= 255; brightness++){
+    for (int i=0;i < largeLEDS; i++){
+    leds[i] = targetColor;
+    }
+  }
+  FastLED.show(); 
+vTaskDelay(503 / portTICK_PERIOD_MS); 
+
+  for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }; // Turn large LEDs black/off
+vTaskDelay(100 / portTICK_PERIOD_MS);
+    
+
+  for (int brightness = 0; brightness <= 255; brightness++){
+    for (int i=0;i < largeLEDS; i++){
+    leds[i] = targetColor;
+      }
+  }
+  FastLED.show(); 
+vTaskDelay(690 / portTICK_PERIOD_MS);
+
+  digitalWrite(soundPins[1],HIGH); //Turn sound off again
+  lastSoundTime = millis();  
+        
+        randomDelay = random(minDelay,maxDelay);
+        }
+      else if (randoTrack == 2){
+        Serial.println("Warning");
+
+        ////////////////////////////////////////WARNING/////////////////////////////
+
+int brightSteps = 220;
+digitalWrite(soundPins[2],LOW);
+
+// 256 brightness steps x 4 makes this too long for the sound length
+// at least that's the conclusion I came to after too many hours
+// trying to get this to work.
+// 220 was perfect, but trying to loop it caused repeat of the sound 
+// so it's just pasted additional times...eh it works now
+
+ 
+ for (int i = 0; i < brightSteps; i++) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+ }
+ // Fade the LED out
+ for (int i = brightSteps; i >= 0; i--) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+ }
+
+/////////////////////////////////////////////2
+ for (int i = 0; i < brightSteps; i++) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+ }
+ // Fade the LED out
+ for (int i = brightSteps; i >= 0; i--) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+
+/////////////////////////////////////////////3
+ }
+  for (int i = 0; i < brightSteps; i++) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+ }
+ // Fade the LED out
+ for (int i = brightSteps; i >= 0; i--) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+ }
+/////////////////////////////////////////////4 
+  for (int i = 0; i < 200; i++) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+ }
+ // Fade the LED out
+ for (int i = brightSteps; i >= 0; i--) {
+   leds[0].r = i;
+   leds[1].r = i;
+   leds[2].r = i;
+   leds[3].r = i;
+   leds[4].r = i;
+   FastLED.show();
+vTaskDelay((500 / portTICK_PERIOD_MS) /brightSteps);
+ }
+digitalWrite(soundPins[2],HIGH); 
+vTaskDelay(20 / portTICK_PERIOD_MS);
+lastSoundTime = millis();  
+        
+        randomDelay = random(minDelay,maxDelay);
+        }
+      else if (randoTrack == 3){
+        Serial.println("Sparks");
+        
+        ////////////////////////////////////////SPARKS/////////////////////////////
+        
+// fileLength 1368ms
+  
+digitalWrite(soundPins[3],LOW); // Sound 4 on
+
+//delay for silence at start of file)
+vTaskDelay(300 / portTICK_PERIOD_MS);
+          
+for (int i = 0; i < largeLEDS; i++) {
+    leds[i] = CRGB::Blue;
+    FastLED.show();
+}
+vTaskDelay(400 / portTICK_PERIOD_MS);
+
+
+for (int i = 0; i < largeLEDS; i++) {
+    leds[i] = CRGB::Aqua;
+    FastLED.show();
+}
+vTaskDelay(300 / portTICK_PERIOD_MS);
+
+
+for (int i = 0; i < largeLEDS; i++) {
+    leds[i] = CRGB::DarkBlue;
+    FastLED.show();
+}
+vTaskDelay(600 / portTICK_PERIOD_MS);
+
+
+for (int i = 0; i < largeLEDS; i++) {
+    leds[i] = CRGB::Cyan;
+    FastLED.show();
+}
+vTaskDelay(50 / portTICK_PERIOD_MS);
+
+//strobe effect at end
+for (int i = 0; i <=2; i++){
+  
+  for (int j = smallLEDS; j < NUM_LEDS; j++){
+    leds[j] = CRGB::White;
+    FastLED.show();
+vTaskDelay(10 / portTICK_PERIOD_MS);
+
+    leds[j] = CRGB::Black;
+    FastLED.show();
+vTaskDelay(10 / portTICK_PERIOD_MS);
+   }
+}
+      
+digitalWrite(soundPins[3], HIGH); // Sound 4 off
+lastSoundTime = millis();  
+        
+        randomDelay = random(minDelay,maxDelay);
+        }
+      else if (randoTrack == 4){
+        Serial.println("Electricity");
+
+        ////////////////////////////////////////ELECTRICITY/////////////////////////////
+
+// This is just Confetti from the Examples file 
+  // with different colors and added array in the pre setup
+  // Random colored speckles that blink in and fade smoothly
+
+  digitalWrite(soundPins[4],LOW); // Sound 5
+    for (int i = smallLEDS+1; i < NUM_LEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }; // Turn small LEDs black/off
+vTaskDelay(150 / portTICK_PERIOD_MS); // Silence in audio file at the start
+  fadeToBlackBy(leds, NUM_LEDS, 10);
+
+for (int j = 0; j < 32; j++){ // how many times to blink
+  for (int i = 0; i < largeLEDS; i++) {
+      leds[i] = colors[random8(3)];
+      FastLED.show();
+vTaskDelay(15 / portTICK_PERIOD_MS);// set blink speed
+    }
+} 
+vTaskDelay(10 / portTICK_PERIOD_MS);
+  digitalWrite(soundPins[4],HIGH); // Sound 5 off
+  lastSoundTime = millis();  
+     
+        randomDelay = random(minDelay,maxDelay);
+        }
+      else if(randoTrack == 5){
+        Serial.println("Robot");
+
+        ////////////////////////////////////////ROBOT/////////////////////////////
+
+int brightness = 255;
+   for (int t = 0; t < NUM_LEDS; t++){
+      leds[t] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(100 / portTICK_PERIOD_MS);
+  
+  digitalWrite(soundPins[5],LOW); // Sound 6
+vTaskDelay(500 / portTICK_PERIOD_MS);//silence at start of audio file
+
+        // LEDs on 1
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+        //off
+        for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+        // LEDs on 2
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+vTaskDelay(300 / portTICK_PERIOD_MS);
+
+        //off
+        for (int i = 0; i < largeLEDS; i++){
+          leds[i] = CRGB::Black;
+          FastLED.show(); 
+       }
+vTaskDelay(50 / portTICK_PERIOD_MS);
+
+        // LEDs on 3
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+vTaskDelay(400 / portTICK_PERIOD_MS);
+
+        //off
+        for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+         // LEDs on 4
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB::White;
+        }
+        FastLED.show();
+vTaskDelay(400 / portTICK_PERIOD_MS);
+
+         //off
+        for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(200 / portTICK_PERIOD_MS);
+
+         // LEDs on 5 less bright
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB(brightness-150,brightness-150,brightness-150);
+        }
+        FastLED.show();
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+  //off
+        for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+         // LEDs on 6 less bright again
+        for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB(brightness-200,brightness-200,brightness-200);
+        }
+        FastLED.show();
+vTaskDelay(100 / portTICK_PERIOD_MS);
+
+        for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(50 / portTICK_PERIOD_MS);
+
+         // LEDs on 7 less bright again
+         for (int i = 0; i < largeLEDS; i++) {
+          leds[i] = CRGB(brightness-200,brightness-200,brightness-200);
+        }
+          FastLED.show();
+vTaskDelay(150 / portTICK_PERIOD_MS);
+        
+        for (int i = 0; i < largeLEDS; i++){
+       leds[i] = CRGB::Black;
+      FastLED.show(); 
+       }
+
+  digitalWrite(soundPins[5],HIGH); // turn off LEDS
+  lastSoundTime = millis(); 
+        
+        randomDelay = random(minDelay,maxDelay);
+        }
+     }
+  }
+}
 //////////////////////////////////////////////////////////// SETUP
 
 void setup(){
@@ -117,6 +573,15 @@ xTaskCreate(
   1000,           // stack size
   NULL,           // task parameters
   1,              // priority (lower number = lower priority)
+  NULL            // task handle
+);
+
+xTaskCreate(
+  mainAnimation,     // function name
+  "mainAnimation",  // task name
+  1000,            // stack size
+  NULL,            // task parameters
+  10,              // priority (lower number = lower priority)
   NULL            // task handle
 );
 
