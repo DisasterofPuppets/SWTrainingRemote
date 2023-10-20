@@ -31,11 +31,10 @@
    Builtin LED is GPIO2
 */
 const int ledPin = 15; // Pin for controlling the LED stip on the ESP32 (GPI12)
-const int crystalSwitch = 33; // Pin for controlling the LED stip on the ESP32 (GPIO34)
+const int crystalSwitch = 2; // Pin for controlling the LED stip on the ESP32 (GPIO34)
 
 
-int soundPins[] = {13, 12, 14, 27, 26, 25}; // connections from Arduino to DY-SV8F board (D13,D12,D14,D27,D26,D25)
-// *******you may need to detach pin 12 during upload if you get a fatal error occurred*****
+int soundPins[] = {13, 14, 27, 26, 25, 33}; // connections from Arduino to DY-SV8F board (D13,D12,D14,D27,D26,D25)
 
 // HARDWARE SETTINGS
 
