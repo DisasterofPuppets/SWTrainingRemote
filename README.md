@@ -8,3 +8,4 @@ Parts:
 - LED Strip
 - 4 ohm Speaker
 - DY-SV8F Audio Board
+- Reed Switch (if you are making the core)
