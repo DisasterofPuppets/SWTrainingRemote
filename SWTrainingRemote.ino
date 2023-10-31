@@ -7,6 +7,7 @@
 - WS2812B Individually Addressible LED Strip (or similar)
 - DY-SV8F Amplifier board
 - 4 Ohm 5W Speaker
+- Reed Switch
 
 *///////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +46,19 @@ const int NUM_LEDS = 10;  // Amount of LEDS in the Strip (For a full model this 
 // Dont fall into the trap of trying to address the last LED as the number above. While we define the real world amount of LEDS here, 
 // Arduino usually addresses them from 0 - 9 (in the case of 10 being declared)
 const int largeLEDS = 5; // Amount of LEDS in the larger holes (6 for full model)
-const int smallLEDS = 5; // Amount of LEDS in the smaller holes (6 for full model)
+const int smallLEDS = 4; // Amount of LEDS in the smaller holes (6 for full model)
+//We aren't counting the final LED as part of the smallLEDS or LargLEDS
+//Make sure these add up to the NUM_LEDS -1)
+
+//Let's make it easier for my brain when referencing the LEDS
+
+int SLED = (NUM_LEDS - largeLEDS); // in this case 10 - 5 = 5
+
+// Visually here is my setup
+
+// 1   2   3   4   5   6   7   8   9   10 // How the LEDS are physically on the Strip
+// 0   1   2   3   4   5   6   7   8   9  // How Arduino references each led on the strip
+// L   L   L   L   L   s   s   s   s   C  // My wiring, 5 large, 4 small, last one for the crystal
 
 #define COLOR_ORDER GRB
 #define CHIPSET     WS2812
@@ -61,8 +74,8 @@ unsigned long lastSoundTime;        // holds last time run in each function
 int randoTrack;                     // holds the random track selection
 int Rando;                          // holds the random intermission setting
 
-int minDelay = 1000; // 10 seconds change this to set the minimum time between main animations
-int maxDelay = 2000; // 20 seconds change this to set the minimum time between main animations
+int minDelay = 10000; // 10 seconds change this to set the minimum time between main animations
+int maxDelay = 20000; // 20 seconds change this to set the minimum time between main animations
 
 int previousNumber = 0;             // Used so we don't play the same main animation / sound  twice in a row
 int previousRando = 0;              // Used so we don't play the same intermission in a row
@@ -72,8 +85,8 @@ int previousRando = 0;              // Used so we don't play the same intermissi
 
 void crystalLED(void * parameters){
   for (;;){
-    Serial.println("Crystal LED");
-    Serial.println(digitalRead(crystalSwitch)); 
+//    Serial.println("Crystal LED");
+//    Serial.println(digitalRead(crystalSwitch)); 
 // CHECK IF THE SWITCH IS OPEN
   int switchState = digitalRead(crystalSwitch);
   if (switchState == 1){ // Open Closed is 0
@@ -83,8 +96,8 @@ void crystalLED(void * parameters){
 
 // Fade the last LED from off to max brightness in green
     for (int i = 0; i <= 255; i++) {
-      leds[NUM_LEDS -1] = CRGB(0, i, 0); // Set the green component to i for the last LED
-     FastLED.show();
+      leds[NUM_LEDS -1] = CRGB(0, i, 0); // So we are only working with the very last LED in the strip
+     FastLED.show();0
      vTaskDelay(someDelay / portTICK_PERIOD_MS);// Delay for smooth fading
     }
 
@@ -114,7 +127,7 @@ void mainAnimation(void * parameters){
       previousNumber = randoTrack;
 
       if (randoTrack == 0){
-        Serial.println("Lasers");
+ //       Serial.println("Lasers");
  
         ////////////////////////////////////////LASERS/////////////////////////////
 
@@ -124,7 +137,11 @@ void mainAnimation(void * parameters){
 vTaskDelay(300 / portTICK_PERIOD_MS);
 
 //Move LED along strip First shot
-    for (int i = 0; i < largeLEDS; i++) {
+    for (int i = 0; i < largeLEDS; i++) { 
+      
+//using < largeLEDS allows us to assign 0 - 4 as the leds in question
+// if we said i <= largeLEDS we would be saying 0 - 5 (which is one too many)
+
       leds[i] = CRGB::Red;
       FastLED.show();
 vTaskDelay(20 / portTICK_PERIOD_MS);
@@ -173,7 +190,7 @@ vTaskDelay(20 / portTICK_PERIOD_MS);
         randomDelay = random(minDelay,maxDelay);
       }
       else if (randoTrack == 1){
-        Serial.println("Jets");
+//        Serial.println("Jets");
 
         ////////////////////////////////////////JETS/////////////////////////////
 
@@ -251,7 +268,7 @@ vTaskDelay(690 / portTICK_PERIOD_MS);
         randomDelay = random(minDelay,maxDelay);
         }
       else if (randoTrack == 2){
-        Serial.println("Warning");
+//        Serial.println("Warning");
 
         ////////////////////////////////////////WARNING/////////////////////////////
 
@@ -353,7 +370,7 @@ lastSoundTime = millis();
         randomDelay = random(minDelay,maxDelay);
         }
       else if (randoTrack == 3){
-        Serial.println("Sparks");
+//        Serial.println("Sparks");
         
         ////////////////////////////////////////SPARKS/////////////////////////////
         
@@ -394,7 +411,12 @@ vTaskDelay(50 / portTICK_PERIOD_MS);
 //strobe effect at end
 for (int i = 0; i <=2; i++){
   
-  for (int j = smallLEDS; j < NUM_LEDS; j++){
+  for (int j = SLED; j < NUM_LEDS; j++){    
+    
+    // starts from the first small LED reference and total so the crystal led is uneffected
+    // remember LEDS are referenced from 0 to minus 1 of the total, eg 10 leds = 0 - 9
+    // as long as we use < NUM_LEDS instead of <= NUM_LEDS this works. 
+    
     leds[j] = CRGB::White;
     FastLED.show();
 vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -402,7 +424,6 @@ vTaskDelay(10 / portTICK_PERIOD_MS);
     leds[j] = CRGB::Black;
     FastLED.show();
 vTaskDelay(10 / portTICK_PERIOD_MS);
-   }
 }
       
 digitalWrite(soundPins[3], HIGH); // Sound 4 off
@@ -410,8 +431,9 @@ lastSoundTime = millis();
         
         randomDelay = random(minDelay,maxDelay);
         }
+}
       else if (randoTrack == 4){
-        Serial.println("Electricity");
+//        Serial.println("Electricity");
 
         ////////////////////////////////////////ELECTRICITY/////////////////////////////
 
@@ -420,12 +442,12 @@ lastSoundTime = millis();
   // Random colored speckles that blink in and fade smoothly
 
   digitalWrite(soundPins[4],LOW); // Sound 5
-    for (int i = smallLEDS+1; i < NUM_LEDS; i++){
+    for (int i = SLED; i < NUM_LEDS; i++){
        leds[i] = CRGB::Black;
       FastLED.show(); 
        }; // Turn small LEDs black/off
 vTaskDelay(150 / portTICK_PERIOD_MS); // Silence in audio file at the start
-  fadeToBlackBy(leds, NUM_LEDS, 10);
+  fadeToBlackBy(leds, NUM_LEDS -2, 10);
 
 for (int j = 0; j < 32; j++){ // how many times to blink
   for (int i = 0; i < largeLEDS; i++) {
@@ -441,12 +463,12 @@ vTaskDelay(10 / portTICK_PERIOD_MS);
         randomDelay = random(minDelay,maxDelay);
         }
       else if(randoTrack == 5){
-        Serial.println("Robot");
+//        Serial.println("Robot");
 
         ////////////////////////////////////////ROBOT/////////////////////////////
 
 int brightness = 255;
-   for (int t = 0; t < NUM_LEDS; t++){
+   for (int t = 0; t < NUM_LEDS -2; t++){
       leds[t] = CRGB::Black;
       FastLED.show(); 
        }
@@ -559,12 +581,12 @@ vTaskDelay(150 / portTICK_PERIOD_MS);
   else{ // if timer not met
   /////////////////////////////////////////////INTERMISSION ANIMATIONS////////////////////////
   
-      Serial.print("Waiting.....");
-      Serial.print(randomDelay);
-      Serial.println(" milliseconds");
+ //     Serial.print("Waiting.....");
+ //     Serial.print(randomDelay);
+//      Serial.println(" milliseconds");
 vTaskDelay(1000 / portTICK_PERIOD_MS);
-      Serial.print("Current count ");
-      Serial.println(currentMillis);  
+//      Serial.print("Current count ");
+//      Serial.println(currentMillis);  
       // set random animation without repeating the previously chosen
       while (Rando == previousRando){
         Rando = random(0,4); //Random number between 0 and 3
@@ -573,9 +595,9 @@ vTaskDelay(1000 / portTICK_PERIOD_MS);
 int brightSteps = 220;
 
 if (Rando == 0) { // SEQUENTIAL BLINK
-Serial.println("Sequential Blink ");
+//Serial.println("Sequential Blink ");
   
-   for (int i = 0; i < largeLEDS; i++){
+   for (int i = 0; i < NUM_LEDS -2; i++){
        leds[i] = CRGB::Black;
       FastLED.show(); 
        }
@@ -589,7 +611,7 @@ vTaskDelay(100 / portTICK_PERIOD_MS);
 
     // Fade in
     for (int j = 0; j < brightSteps; j++) {
-      for (int i = 5; i <= 8; i++) {
+      for (int i = 0; i < NUM_LEDS -2; i++) {
         leds[i] = CRGB(randomR, randomG, randomB);
       }
       FastLED.show();
@@ -598,7 +620,7 @@ vTaskDelay((500 / portTICK_PERIOD_MS) / brightSteps);
 
     // Fade out
     for (int j = brightSteps; j >= 0; j--) {
-      for (int i = 5; i <= 8; i++) {
+      for (int i = 0; i <= NUM_LEDS -2; i++) {
         leds[i] = CRGB(randomR, randomG, randomB);
       }
       FastLED.show();
@@ -608,14 +630,14 @@ vTaskDelay((500 / portTICK_PERIOD_MS) / brightSteps);
 }
 
 else if (Rando == 1) { // CHASE
-  Serial.println("Sequential Chase ");
-   for (int i = 0; i < largeLEDS; i++){
+//  Serial.println("Sequential Chase ");
+   for (int i = 0; i < NUM_LEDS -2; i++){
        leds[i] = CRGB::Black;
       FastLED.show(); 
        }
 vTaskDelay(10 / portTICK_PERIOD_MS);
 
-  for (int i = smallLEDS + 1; i < NUM_LEDS; i++) {
+  for (int i = 0; i < NUM_LEDS -2; i++) {
     int randomR = random(256);
     int randomG = random(256);
     int randomB = random(256);
@@ -635,15 +657,15 @@ vTaskDelay((100 / portTICK_PERIOD_MS) / brightSteps);
   }
 }
 else if (Rando == 2){ //random colors
-  Serial.println("Random Colors ");
-   for (int i = 0; i < largeLEDS; i++){
+//  Serial.println("Random Colors ");
+   for (int i = 0; i < NUM_LEDS -2; i++){
        leds[i] = CRGB::Black;
       FastLED.show(); 
        }
 vTaskDelay(10 / portTICK_PERIOD_MS);
 
 
-  for (int i =smallLEDS +1; i < NUM_LEDS; i++){
+  for (int i = 0; i < NUM_LEDS -2; i++){
     int randomR = random(256);
     int randomG = random(256);
     int randomB = random(256);
@@ -662,34 +684,36 @@ vTaskDelay(500 / portTICK_PERIOD_MS); // Adjust the delay duration as needed
     }
 }
 else if (Rando == 3) { // sparkles
-  Serial.println("Sparkles");
-   for (int i = 0; i < largeLEDS; i++){
+//  Serial.println("Sparkles");
+   for (int i = 0; i < NUM_LEDS -2; i++){
        leds[i] = CRGB::Black;
       FastLED.show(); 
        }
 vTaskDelay(100 / portTICK_PERIOD_MS);
-  int selectedLED = random(smallLEDS + 1, NUM_LEDS);
+
+  int selectedLED = random(0, NUM_LEDS -2); // so we don't get the crystal LED
   int NL = -9999; // Initialize to a "null" value
   int NR = -9999; // Initialize to a "null" value
 
-  if (selectedLED == 5) {
-    NL = -9999; // NULL
-    NR = 6;
-  } else if (selectedLED == 6) {
-    NL = 5;
-    NR = 7;
-  } else if (selectedLED == 7) {
-    NL = 6;
-    NR = 8;
-  } else if (selectedLED == 8) {
-    NL = 7;
-    NR = -9999;
-  }
+   if (selectedLED == 0) {
+    NL = NUM_LEDS-1; // 2nd last LED on the strip
+    NR = selectedLED + 1;
+   }
+   
+   else if (selectedLED == NUM_LEDS -2) {
+    NL = selectedLED -1; // back one
+    NR =  0;
+   }  
+   
+   else{
+    NL = selectedLED - 1; // NULL
+    NR = selectedLED + 1;
+   }
 
   FastLED.show();
 vTaskDelay(300 / portTICK_PERIOD_MS);
 
-  // Fade in the main LED
+
  // Fade in the main LED
   for (int bright = 0; bright < 256; bright++) {
     leds[selectedLED] = CRGB(bright, bright, bright);
@@ -699,30 +723,22 @@ vTaskDelay(5 / portTICK_PERIOD_MS);// Adjust delay for desired fading speed
 
   // Fade in the neighboring LEDs to a lower brightness
   for (int bright = 0; bright < 201; bright++) {
-    if (NL != -9999) {
       leds[NL] = CRGB(bright, bright, bright);
-    }
-
-    if (NR != -9999) {
       leds[NR] = CRGB(bright, bright, bright);
     }
 
+
     FastLED.show();
 vTaskDelay(5 / portTICK_PERIOD_MS); // Adjust delay for desired fading speed
-  }
+  
 
   // Delay after max brightness is reached
 vTaskDelay(200 / portTICK_PERIOD_MS);
 
   // Fade out all three LEDs
   for (int bright = 255; bright >= 0; bright--) {
-    leds[selectedLED] = CRGB(bright, bright, bright);
-
-    if (NL != -9999) {
+      leds[selectedLED] = CRGB(bright, bright, bright);
       leds[NL] = CRGB(bright, bright, bright);
-    }
-
-    if (NR != -9999) {
       leds[NR] = CRGB(bright, bright, bright);
     }
 
@@ -731,8 +747,7 @@ vTaskDelay(5 / portTICK_PERIOD_MS);// Adjust delay for desired fading speed
   }
 }
  
-}
-  }
+ }
 }
 //////////////////////////////////////////////////////////// SETUP
 
@@ -776,7 +791,10 @@ for (int i =0; i < numSounds; i++){
 
 pinMode(crystalSwitch,INPUT_PULLUP);
 
-Serial.begin(9600); // for debugging
+//SANITY DELAY
+delay(1000);
+
+//Serial.begin(9600); // for debugging
   
 }
 
