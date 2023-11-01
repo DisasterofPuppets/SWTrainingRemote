@@ -9,7 +9,10 @@
 - 4 Ohm 5W Speaker
 - Reed Switch
 
-*///////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// - You will need to update the 'Linear array' led pin order based on your wiring on line 93 //
+// - Change the amount of LEDS on rows 51 and 52                                             //
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /************************Disaster of Puppets 2023*****************
@@ -60,6 +63,38 @@ int SLED = (NUM_LEDS - largeLEDS); // in this case 10 - 5 = 5
 // 0   1   2   3   4   5   6   7   8   9  // How Arduino references each led on the strip
 // L   L   L   L   L   s   s   s   s   C  // My wiring, 5 large, 4 small, last one for the crystal
 
+//Here is where I am now going to map how my leds relate to positions in the orb
+//essentially you have 3 small and 3 big per half.
+//Represented in text below
+
+///////////////Top Half
+//I numbered these from the first LED on the right hand side of the damaged hole
+
+//    | HOLE |O     O       
+//    | HOLE |   o     o
+//Physical    2  7  3  9
+//Reference   1  6  2  8     
+///////////////Bottom Half
+//    | HOLE |   o     o
+//    | HOLE |O     O     O
+//Physical    1  6  5  8  4
+//Reference   0  5  4  7  3
+
+//Keep in mind these are vertically above / below each other..so really you have pairs of leds
+
+//So in order to move an LED animation from the right of the gap horizontal sequentially paired I need to make the changes to
+
+// 0 (has no pair) - 5 & 1 - 4 & 6, 7 & 2, 3 & 8
+
+//or if we want to treat them in a linear type animation where the bottom is always first (since it's the first LED)
+// 0 1 5 6 4 2 7 8 3
+//let's make this an array
+////////////////////////////////////////////////////////////////////
+int linear[] = {0,1,5,6,4,2,7,8,3}; //CHANGE ME BASED ON YOUR WIRING
+////////////////////////////////////////////////////////////////////
+
+
+
 #define COLOR_ORDER GRB
 #define CHIPSET     WS2812
 bool gReverseDirection = false;
@@ -97,7 +132,7 @@ void crystalLED(void * parameters){
 // Fade the last LED from off to max brightness in green
     for (int i = 0; i <= 255; i++) {
       leds[NUM_LEDS -1] = CRGB(0, i, 0); // So we are only working with the very last LED in the strip
-     FastLED.show();0
+     FastLED.show();
      vTaskDelay(someDelay / portTICK_PERIOD_MS);// Delay for smooth fading
     }
 
@@ -594,7 +629,7 @@ vTaskDelay(1000 / portTICK_PERIOD_MS);
       previousRando = Rando;
 int brightSteps = 220;
 
-if (Rando == 0) { // SEQUENTIAL BLINK
+if (Rando == 0) { ///////////////////////////////////////////// SEQUENTIAL BLINK
 //Serial.println("Sequential Blink ");
   
    for (int i = 0; i < NUM_LEDS -2; i++){
@@ -629,34 +664,41 @@ vTaskDelay((500 / portTICK_PERIOD_MS) / brightSteps);
   }
 }
 
-else if (Rando == 1) { // CHASE
+else if (Rando == 1) { /////////////////////////////////// CHASE
 //  Serial.println("Sequential Chase ");
-   for (int i = 0; i < NUM_LEDS -2; i++){
-       leds[i] = CRGB::Black;
+   for (int i = 0; i < NUM_LEDS -1; i++){
+       leds[linear[i]] = CRGB::Black;
       FastLED.show(); 
        }
 vTaskDelay(10 / portTICK_PERIOD_MS);
 
-  for (int i = 0; i < NUM_LEDS -2; i++) {
+  for (int i = 0; i < NUM_LEDS -1; i++) {
     int randomR = random(256);
     int randomG = random(256);
     int randomB = random(256);
 
     for (int j = 0; j < brightSteps; j++) {
-      leds[i] = CRGB(randomR, randomG, randomB);
+      leds[linear[i]] = CRGB(randomR, randomG, randomB);
       FastLED.show();
 vTaskDelay((100 / portTICK_PERIOD_MS) / brightSteps);
     }
 
     // Fade the LED out
     for (int j = brightSteps; j >= 0; j--) {
-      leds[i] = CRGB(randomR, randomG, randomB);
+      leds[linear[i]] = CRGB(randomR, randomG, randomB);
       FastLED.show();
 vTaskDelay((100 / portTICK_PERIOD_MS) / brightSteps);
     }
+    
+   for (int i = 0; i < NUM_LEDS -1; i++){  // turn off leds
+       leds[linear[i]] = CRGB::Black;
+      FastLED.show(); 
+       }
+vTaskDelay(10 / portTICK_PERIOD_MS);
+    
   }
 }
-else if (Rando == 2){ //random colors
+else if (Rando == 2){ ////////////////////////////////////random colors
 //  Serial.println("Random Colors ");
    for (int i = 0; i < NUM_LEDS -2; i++){
        leds[i] = CRGB::Black;
@@ -683,7 +725,7 @@ vTaskDelay(500 / portTICK_PERIOD_MS); // Adjust the delay duration as needed
     FastLED.show();
     }
 }
-else if (Rando == 3) { // sparkles
+else if (Rando == 3) { /////////////////////////////////// sparkles
 //  Serial.println("Sparkles");
    for (int i = 0; i < NUM_LEDS -2; i++){
        leds[i] = CRGB::Black;
