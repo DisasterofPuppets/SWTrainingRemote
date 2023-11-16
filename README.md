@@ -4,7 +4,7 @@ Not going to lie, used ChatGPT after getting the basics working.
 
 Parts:
 
-- Arduino Nano
+- ESP32
 - LED Strip
 - 4 ohm Speaker
 - DY-SV8F Audio Board
